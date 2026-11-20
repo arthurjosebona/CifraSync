@@ -13,7 +13,7 @@ function longSong(prefix: string): string {
 async function createSong(page: Page, title: string, content: string): Promise<string> {
   await page.goto('/musicas/nova');
   await page.getByLabel('Título').fill(title);
-  await page.getByLabel('Tom').fill('G');
+  await page.getByLabel('Tom', { exact: true }).fill('G');
   const editor = page.locator('.cm-content');
   await editor.click();
   await page.keyboard.insertText(content);
