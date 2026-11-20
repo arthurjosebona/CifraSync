@@ -2,15 +2,12 @@
 
 Todas as mudanças relevantes do CifraSync. Gerado a partir dos Conventional Commits.
 
-## [0.3.0](https://github.com/arthurjosebona/CifraSync/compare/v0.1.0...v0.3.0) (2026-11-20)
+## [0.3.0](https://github.com/arthurjosebona/CifraSync/compare/v0.2.0...v0.3.0) (2026-11-20)
 
 ### Funcionalidades
 
-* **acordes:** adiciona instrumentos, dataset e gerador de posições (T18–T19) ([d8eee50](https://github.com/arthurjosebona/CifraSync/commit/d8eee5034712c32300c15b75bbb72e6ec519432d))
-* **acordes:** adiciona notas, parser e transposição de acordes (T10–T12) ([42986a5](https://github.com/arthurjosebona/CifraSync/commit/42986a506e5d3445c292278be8826b4e479c94df))
 * **android:** app Android com Capacitor (T70–T72) ([#14](https://github.com/arthurjosebona/CifraSync/issues/14)) ([040325a](https://github.com/arthurjosebona/CifraSync/commit/040325a2e4f175fb80d059f52ccd858de8c63389))
 * **api:** servidor, contas e sincronização (T47–T55) ([#11](https://github.com/arthurjosebona/CifraSync/issues/11)) ([c643b20](https://github.com/arthurjosebona/CifraSync/commit/c643b20310a0beea15be878c782076bf61ea9365))
-* **core:** adiciona AST da cifra, formatação automática, capo e ChordPro (T13–T17, T20) ([0a1454a](https://github.com/arthurjosebona/CifraSync/commit/0a1454ac28d4807a3348e8768092fd0eac2a7422))
 * **desktop:** app desktop com Tauri 2 para Windows e Linux (T64–T67) ([#13](https://github.com/arthurjosebona/CifraSync/issues/13)) ([b1b9e6c](https://github.com/arthurjosebona/CifraSync/commit/b1b9e6c8cd5ff2e3d8444107e9320ba421a93f28))
 * **grupos:** grupos com convites, papéis e repertórios compartilhados (T57–T61) ([#12](https://github.com/arthurjosebona/CifraSync/issues/12)) ([868cc41](https://github.com/arthurjosebona/CifraSync/commit/868cc4177355ed1e3cb3ca855b8f5a0f7a1a42a2))
 * **palco:** modo palco com paginação, rolagem automática e híbrida (T35–T43) ([#10](https://github.com/arthurjosebona/CifraSync/issues/10)) ([95e75bc](https://github.com/arthurjosebona/CifraSync/commit/95e75bc58fb048224462f9e47e262aa5ebdd70f1))
