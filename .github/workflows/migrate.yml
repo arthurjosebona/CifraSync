@@ -1,0 +1,46 @@
+name: Migrations
+
+# Aplica as migrations do banco de produção (Neon) quando elas mudam na main.
+# Requer o secret DATABASE_URL_UNPOOLED (conexão direta, sem pooler) — ver T55.
+on:
+  push:
+    branches: [main]
+    paths: ['apps/web/drizzle/**']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: migrate
+  cancel-in-progress: false
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Verificar secret
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL_UNPOOLED }}
+        run: |
+          if [ -z "$DATABASE_URL" ]; then
+            echo "::error::Cadastre o secret DATABASE_URL_UNPOOLED (Settings → Secrets and variables → Actions)."
+            exit 1
+          fi
+
+      - name: Aplicar migrations
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL_UNPOOLED }}
+        run: pnpm --filter @cifrasync/web db:migrate
