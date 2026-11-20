@@ -12,6 +12,15 @@
   --accent: #b7791f;
   --accent-contrast: #ffffff;
   --danger: #c0392b;
+  /* cores da cifra fora do palco (o palco usa as cores configuradas) */
+  --song-lyric: var(--text);
+  --song-chord: #b45309;
+  --song-chorus1: #0369a1;
+  --song-chorus2: #15803d;
+  --song-chorus3: #be185d;
+  --song-voice2: #6d28d9;
+  --song-tab: #4b5563;
+  --song-note: #c2410c;
   color-scheme: light;
 }
 
@@ -25,6 +34,13 @@
   --accent: #f5c542;
   --accent-contrast: #111111;
   --danger: #ff6b5b;
+  --song-chord: #ffcc00;
+  --song-chorus1: #4fc3f7;
+  --song-chorus2: #81c784;
+  --song-chorus3: #f48fb1;
+  --song-voice2: #b39ddb;
+  --song-tab: #bdbdbd;
+  --song-note: #ff8a65;
   color-scheme: dark;
 }
 
@@ -60,4 +76,97 @@ body {
 :focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
+}
+
+/* ---------------------------------------------------------------------------
+   Cifra (SongView)
+   --------------------------------------------------------------------------- */
+.song {
+  color: var(--song-lyric);
+  line-height: var(--song-line-height, 1.35);
+  font-size: var(--song-font-size, 1rem);
+  font-family: var(--song-font, var(--font-sans));
+}
+.song-center {
+  text-align: center;
+}
+.song-line,
+.song-chordline {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.song-pair {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+}
+.song-center .song-pair {
+  justify-content: center;
+}
+.song-chunk {
+  display: inline-flex;
+  flex-direction: column;
+  white-space: pre;
+}
+.song-chunk .song-chord {
+  padding-right: 0.4em;
+}
+.song-chord {
+  color: var(--song-chord);
+  font-family: var(--song-chord-font, var(--font-mono));
+  font-weight: 700;
+  font-size: calc(1em * var(--song-chord-scale, 0.9));
+}
+.song-chordline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 1.2em;
+}
+.song-chordlabel {
+  color: var(--muted);
+  font-size: 0.85em;
+}
+.song-blank {
+  height: 0.8em;
+}
+.song-section {
+  font-weight: 700;
+  margin-top: 0.6em;
+  opacity: 0.85;
+}
+.song-chorus {
+  --chorus-color: var(--song-chorus1);
+  color: var(--chorus-color);
+  border-radius: 0.4em;
+  padding: 0.15em 0.5em;
+  margin: 0.2em 0;
+}
+.song-chorus2 {
+  --chorus-color: var(--song-chorus2);
+}
+.song-chorus3 {
+  --chorus-color: var(--song-chorus3);
+}
+.song-marker {
+  border-left: 0.25em solid var(--chorus-color);
+}
+.song-tint {
+  background: color-mix(in srgb, var(--chorus-color) 14%, transparent);
+}
+.song-voice2,
+.song-voice2-block {
+  color: var(--song-voice2);
+  font-style: italic;
+}
+.song-note {
+  color: var(--song-note);
+  font-style: italic;
+  font-size: 0.9em;
+}
+.song-tab pre {
+  color: var(--song-tab);
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  margin: 0.3em 0;
+  overflow-x: auto;
 }

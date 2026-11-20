@@ -191,7 +191,7 @@ Atualizar `docs/adr/README.md`.
 **Verificar:** `pnpm --filter @cifrasync/sync test` (fake-indexeddb).
 **Depende de:** T24
 
-### [ ] T27: Biblioteca de músicas
+### [x] T27: Biblioteca de músicas
 **Fazer:** lista com `useLiveQuery`; busca por título, artista, tom, estilo e trecho da letra (sem acento); ordenação; ação "nova música".
 **Verificar:** `pnpm --filter @cifrasync/web build`.
 **Depende de:** T23, T26
