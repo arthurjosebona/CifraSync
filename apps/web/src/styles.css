@@ -170,3 +170,66 @@ body {
   margin: 0.3em 0;
   overflow-x: auto;
 }
+
+/* refrão quebrado em unidades no palco: cantos só na primeira e na última linha */
+.song-chorus.song-unit {
+  border-radius: 0;
+  margin: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+.song-chorus.song-unit-first {
+  border-top-left-radius: 0.4em;
+  border-top-right-radius: 0.4em;
+  padding-top: 0.15em;
+  margin-top: 0.2em;
+}
+.song-chorus.song-unit-last {
+  border-bottom-left-radius: 0.4em;
+  border-bottom-right-radius: 0.4em;
+  padding-bottom: 0.15em;
+  margin-bottom: 0.2em;
+}
+
+/* ---------------------------------------------------------------------------
+   Palco
+   --------------------------------------------------------------------------- */
+.stage {
+  background: var(--stage-bg, #000);
+  color: var(--song-lyric);
+  touch-action: manipulation;
+  user-select: none;
+}
+.stage-page-enter-slide-next {
+  animation: stage-slide-next var(--stage-transition, 200ms) ease-out;
+}
+.stage-page-enter-slide-prev {
+  animation: stage-slide-prev var(--stage-transition, 200ms) ease-out;
+}
+.stage-page-enter-fade {
+  animation: stage-fade var(--stage-transition, 200ms) ease-out;
+}
+@keyframes stage-slide-next {
+  from {
+    transform: translateX(6%);
+    opacity: 0.4;
+  }
+}
+@keyframes stage-slide-prev {
+  from {
+    transform: translateX(-6%);
+    opacity: 0.4;
+  }
+}
+@keyframes stage-fade {
+  from {
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .stage-page-enter-slide-next,
+  .stage-page-enter-slide-prev,
+  .stage-page-enter-fade {
+    animation: none;
+  }
+}

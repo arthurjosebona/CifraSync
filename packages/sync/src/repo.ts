@@ -40,6 +40,19 @@ export async function getCurrentUserId(db: CifraDB): Promise<string> {
   return id;
 }
 
+/** Id do dono dos dados sem criar nada (seguro dentro de liveQuery). */
+export async function peekCurrentUserId(db: CifraDB): Promise<string | undefined> {
+  return (await metaGet<string>(db, 'userId')) ?? (await metaGet<string>(db, 'localUserId'));
+}
+
+/**
+ * Garante que o id do aparelho e o do usuário local existem. Chamado na inicialização do app,
+ * fora de consultas reativas (que são somente leitura).
+ */
+export async function ensureIdentity(db: CifraDB): Promise<{ deviceId: string; userId: string }> {
+  return { deviceId: await getDeviceId(db), userId: await getCurrentUserId(db) };
+}
+
 // ---------------------------------------------------------------------------
 // Escrita com fila de mutações
 // ---------------------------------------------------------------------------
@@ -351,8 +364,10 @@ export async function duplicateSetlist(db: CifraDB, id: string): Promise<Setlist
 export async function getSettingsRows(
   db: CifraDB,
 ): Promise<{ global?: UserSettings; device?: UserSettings }> {
-  const userId = await getCurrentUserId(db);
-  const deviceId = await getDeviceId(db);
+  // só leitura: roda dentro de consultas reativas (liveQuery), que não podem gravar
+  const userId = await peekCurrentUserId(db);
+  const deviceId = await metaGet<string>(db, 'deviceId');
+  if (!userId) return {};
   const rows = await db.userSettings.where('userId').equals(userId).toArray();
   return {
     global: rows.find((r) => r.deviceId === null && !r.deleted),

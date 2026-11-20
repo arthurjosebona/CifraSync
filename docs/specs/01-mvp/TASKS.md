@@ -162,7 +162,7 @@ Atualizar `docs/adr/README.md`.
 **Verificar:** `pnpm --filter @cifrasync/core test` depois dos ajustes.
 **Depende de:** T19
 
-### [ ] T22: Release v0.2.0
+### [x] T22: Release v0.2.0
 **Fazer:** [fluxo de release](#t9-release-v010) para `v0.2.0` (`release/0.2.0`).
 **Verificar:** tag no remoto; CI verde.
 **Depende de:** T10–T21
@@ -241,17 +241,17 @@ Atualizar `docs/adr/README.md`.
 
 **Branches:** `feature/palco-paginacao` (T35–T38) · `feature/palco-rolagem` (T39–T40) · `feature/palco-acordes-config` (T41–T42) · `feature/palco-e2e` (T43) · `feature/ajustes-palco` (correções da T44)
 
-### [ ] T35: Camada de plataforma (web)
+### [x] T35: Camada de plataforma (web)
 **Fazer:** interface `Platform` e implementação web (Wake Lock, Fullscreen, armazenamento do token, salvar/abrir arquivo, verificar atualização), com detecção da plataforma em tempo de execução.
 **Verificar:** `pnpm --filter @cifrasync/web build`.
 **Depende de:** T23
 
-### [ ] T36: Motor de paginação
+### [x] T36: Motor de paginação
 **Fazer:** medição de unidades indivisíveis, distribuição em páginas, colunas 1/2/auto, recálculo com `ResizeObserver`, memoização por música/tom/capo/configuração.
 **Verificar:** `pnpm --filter @cifrasync/web build` e testes unitários da distribuição.
 **Depende de:** T28
 
-### [ ] T37: Tela do palco e paginação por toque
+### [x] T37: Tela do palco e paginação por toque
 **Fazer:**
 - `StageView` em tela cheia, com cabeçalho mínimo;
 - zonas de toque (direita/esquerda, invertíveis);
@@ -263,7 +263,7 @@ Atualizar `docs/adr/README.md`.
 **Verificar:** `pnpm --filter @cifrasync/web build`.
 **Depende de:** T35, T36
 
-### [ ] T38: Execução de repertório
+### [x] T38: Execução de repertório
 **Fazer:**
 - próxima e anterior música, gaveta com a lista e os momentos;
 - avisos de última página e de fim do repertório;
@@ -275,22 +275,22 @@ Atualizar `docs/adr/README.md`.
 **Verificar:** `pnpm --filter @cifrasync/web build`.
 **Depende de:** T31, T37
 
-### [ ] T39: Rolagem automática
+### [x] T39: Rolagem automática
 **Fazer:** loop com `requestAnimationFrame` e acumulador; velocidade fixa ou calculada pela duração; atraso inicial; play/pause, ±velocidade, inverter, salto; velocidade salva por música.
 **Verificar:** `pnpm --filter @cifrasync/web build`.
 **Depende de:** T37
 
-### [ ] T40: Modo híbrido
+### [x] T40: Modo híbrido
 **Fazer:** pausar a escrita da rolagem durante interação manual (pointer, wheel, touch) e retomar da nova posição, com atraso de retomada configurável; toques laterais = meia tela.
 **Verificar:** `pnpm --filter @cifrasync/web build`.
 **Depende de:** T39
 
-### [ ] T41: Coluna de acordes e faixa de referência
+### [x] T41: Coluna de acordes e faixa de referência
 **Fazer:** coluna lateral com os acordes usados (transpostos e com capo aplicado), troca de posição ao tocar no diagrama, recolhível no retrato; faixa de referência opcional.
 **Verificar:** `pnpm --filter @cifrasync/web build`.
 **Depende de:** T25, T37
 
-### [ ] T42: Configurações de tela
+### [x] T42: Configurações de tela
 **Fazer:**
 - tela de configurações com pré-visualização ao vivo;
 - tipografia, cores por elemento e estilo do refrão;
@@ -301,7 +301,7 @@ Atualizar `docs/adr/README.md`.
 **Verificar:** `pnpm --filter @cifrasync/web build`.
 **Depende de:** T26, T37
 
-### [ ] T43: Testes e2e do palco
+### [x] T43: Testes e2e do palco
 **Fazer:** Playwright (Chromium e WebKit) cobrindo:
 - paginação por toque;
 - a página nunca começar com uma letra separada da sua cifra;

@@ -1,6 +1,6 @@
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
-import { defineConfig } from 'vite';
+import { defineConfig } from 'vitest/config';
 import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig({
@@ -43,5 +43,9 @@ export default defineConfig({
   build: {
     target: 'es2022',
     sourcemap: true,
+  },
+  test: {
+    // os testes e2e (Playwright) ficam em e2e/ e não rodam no Vitest
+    exclude: ['e2e/**', 'node_modules/**', 'dist/**'],
   },
 });

@@ -54,6 +54,8 @@ export const StageSettings = z.object({
   transition: z.enum(['none', 'slide', 'fade']).default('slide'),
   /** Segundos para a rolagem automática retomar após interação manual (modo híbrido). */
   hybridResumeDelay: z.number().min(0).max(5).default(1),
+  /** Segundos de espera antes da rolagem automática começar (ex.: introdução). */
+  scrollStartDelay: z.number().min(0).max(60).default(0),
 });
 export type StageSettings = z.infer<typeof StageSettings>;
 

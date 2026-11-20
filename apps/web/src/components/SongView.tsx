@@ -28,7 +28,7 @@ function Lyric({ parts }: { parts: Part[] }) {
   );
 }
 
-function LineView({ line, opts }: { line: Line; opts: Required<SongViewOptions> }) {
+export function LineView({ line, opts }: { line: Line; opts: Required<SongViewOptions> }) {
   switch (line.kind) {
     case 'blank':
       return <div className="song-blank" aria-hidden />;
