@@ -157,7 +157,7 @@ Atualizar `docs/adr/README.md`.
 **Verificar:** `pnpm --filter @cifrasync/core test`.
 **Depende de:** T13
 
-### [ ] T21: Revisão das posições de cavaco e ukulele [H]
+### [x] T21: Revisão das posições de cavaco e ukulele [H]
 **Fazer:** o Claude gera, com um script do `core` (SVG simples, sem depender da UI da Fase 2), uma página estática com os diagramas das 15 posições mais comuns de cavaco e ukulele. O autor marca as que não fazem sentido, e o Claude ajusta a pontuação ou cria exceções.
 **Verificar:** `pnpm --filter @cifrasync/core test` depois dos ajustes.
 **Depende de:** T19
@@ -171,7 +171,7 @@ Atualizar `docs/adr/README.md`.
 
 **Branches:** `feature/spa-base` (T23–T24, T32) · `feature/banco-local` (T26) · `feature/biblioteca-editor` (T25, T27–T30) · `feature/repertorios` (T31) · `feature/ajustes-spa` (correções da T33)
 
-### [ ] T23: Base da SPA
+### [x] T23: Base da SPA
 **Fazer:** `apps/web` com Vite + React + TS, React Router (rotas vazias: biblioteca, música, editor, repertórios, grupos, palco, dicionário, configurações, login), Tailwind, tema claro/escuro e layout responsivo com navegação inferior no celular e lateral no desktop.
 **Verificar:** `pnpm --filter @cifrasync/web build`.
 **Depende de:** T2
