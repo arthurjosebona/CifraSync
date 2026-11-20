@@ -222,7 +222,7 @@ Atualizar `docs/adr/README.md`.
 **Verificar:** `pnpm --filter @cifrasync/web build`.
 **Depende de:** T27
 
-### [ ] T32: PWA offline
+### [x] T32: PWA offline
 **Fazer:** vite-plugin-pwa (precache da SPA, manifest, ícones provisórios), `navigator.storage.persist()` e aviso de nova versão.
 **Verificar:** `pnpm --filter @cifrasync/web build` gera o service worker.
 **Depende de:** T23
