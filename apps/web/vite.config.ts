@@ -55,5 +55,7 @@ export default defineConfig({
   test: {
     // os testes e2e (Playwright) ficam em e2e/ e não rodam no Vitest
     exclude: ['e2e/**', 'node_modules/**', 'dist/**'],
+    // testes do servidor criam banco (PGlite) e fazem hash de senha: mais tempo que o padrão
+    testTimeout: 30_000,
   },
 });
