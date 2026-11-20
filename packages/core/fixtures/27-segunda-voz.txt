@@ -1,0 +1,7 @@
+C|D             G
+L|Quando eu for ((quando eu for))
+C|A             D
+L|Leva o meu cantar
+D|{voz2}
+L|(leva o meu cantar)
+D|{/voz2}

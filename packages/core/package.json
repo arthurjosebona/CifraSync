@@ -1,6 +1,6 @@
 {
   "name": "@cifrasync/core",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
   "exports": {
@@ -13,6 +13,12 @@
     "build": "tsc -p tsconfig.build.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "lint": "eslint .",
-    "test": "vitest run --passWithNoTests"
+    "test": "vitest run --passWithNoTests",
+    "data:build": "node scripts/build-chord-data.mjs",
+    "review:voicings": "tsx scripts/review-voicings.ts"
+  },
+  "devDependencies": {
+    "@tombatossals/chords-db": "0.5.1",
+    "tsx": "^4.23.15"
   }
 }

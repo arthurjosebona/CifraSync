@@ -1,0 +1,11 @@
+H|PARTE 1
+C|C         F         C
+L|Somos a turma da rua
+C|C         G         C
+L|A bola é nossa paixão
+B|
+H|PARTE 2
+C|F         C
+L|Quem é da turma não falha
+C|G7        C
+L|Em campo ou no coração
