@@ -190,7 +190,7 @@ Cada fase termina num estado utilizável, com uma release semântica. O TASKS.md
 
 | Fase | Entrega | Release |
 |---|---|---|
-| 0 | Monorepo, lint/typecheck/test, commitlint/Husky, CI, geração de versão, ADRs | `v0.1.0` |
+| 0 | Branch `develop`, monorepo, lint/typecheck/test, commitlint/Husky, CI, proteção de branches, geração de versão, ADRs | `v0.1.0` |
 | 1 | `packages/core` completo e testado (cifra, acordes, transposição, capo, posições) | `v0.2.0` |
 | 2 | SPA local sem servidor: biblioteca, editor, dicionário, repertórios, PWA offline | `v0.3.0` |
 | 3 | Modo palco: paginação, rolagem automática/híbrida, coluna de acordes, personalização | `v0.4.0` |
@@ -198,7 +198,7 @@ Cada fase termina num estado utilizável, com uma release semântica. O TASKS.md
 | 5 | Grupos: busca por usuário, convites, papéis, compartilhamento, revogação | `v0.6.0` |
 | 6 | Desktop Tauri (Windows/Linux) com updater e build na release | `v0.7.0` |
 | 7 | Android Capacitor com APK assinado na release | `v0.8.0` |
-| 8 | Polimento (export/import, configurações por dispositivo, acessibilidade, revisão de segurança) → critérios da SPEC verificados → criação da `develop` e proteção das branches (início do git flow) | `v1.0.0` |
+| 8 | Polimento (export/import, configurações por dispositivo, acessibilidade, revisão de segurança) → critérios da SPEC verificados | `v1.0.0` |
 
 ## Divisão de trabalho: Claude × autor
 
@@ -216,6 +216,7 @@ Cada fase termina num estado utilizável, com uma release semântica. O TASKS.md
 | Fase | Ação | Por quê |
 |---|---|---|
 | 0 | Criar o repositório público `CifraSync` no GitHub e autorizar o push | Conta do autor |
+| 0 | Ativar a proteção de `main` e `develop` no GitHub (PR e CI obrigatórios) | Configuração da conta do autor |
 | 4 | Criar conta na Vercel, importar o repositório, criar o banco Neon em *Storage*, cadastrar `BETTER_AUTH_SECRET` | Aceite de termos e criação de recursos na conta do autor |
 | 4 | Cadastrar no GitHub o secret da URL direta do banco, usado nas migrations | Credencial |
 | 6 | Guardar a chave privada do updater e cadastrar os secrets do Tauri | Credencial; se perdida, o app instalado não atualiza mais |
@@ -229,22 +230,13 @@ Cada fase termina num estado utilizável, com uma release semântica. O TASKS.md
 ## Versionamento e CI/CD
 
 - **Commits:** Conventional Commits em português, validados no hook `commit-msg` e no título do PR ([versionamento](../../processo/versionamento.md)).
-- **Fluxo de branches em dois momentos:**
-
-  | Momento | Fluxo |
-  |---|---|
-  | **Durante este MVP (até `v1.0.0`)** | Trabalho direto na `main`. Cada fase termina com uma release gerada na própria `main`. |
-  | **Depois da `v1.0.0` (toda feature seguinte)** | **Git flow padrão:** criar a `develop` a partir da `main`, proteger `main` e `develop`, e seguir o ciclo descrito abaixo. |
-
-  Ciclo do git flow:
-  - `feature/NN-nome` sai da `develop` e volta para ela por PR.
-  - `release/X.Y.Z` sai da `develop`, recebe o bump de versão e o CHANGELOG, é mergeada na `main` com a tag e volta para a `develop`.
+- **Git flow desde o início**, inclusive no MVP. A `develop` é criada logo após o push inicial (Fase 0), e `main` e `develop` passam a ser protegidas assim que o CI existir.
+  - `feature/*` sai da `develop` e volta para ela por PR com squash. Os nomes de branch de cada fase estão no TASKS.
+  - Cada fase do MVP termina numa `release/0.x.0`, que é mergeada na `main` com a tag e volta para a `develop`.
   - `hotfix/X.Y.Z` sai da `main` e volta para a `main` e para a `develop`.
 
-  O detalhe está em [versionamento](../../processo/versionamento.md#git-flow-após-o-mvp).
-- **Geração de versão:** **`commit-and-tag-version`** calcula a próxima versão pelos Conventional Commits, atualiza o CHANGELOG e as versões (web, Tauri, Gradle), cria o commit `chore(release): X.Y.Z` e a tag `vX.Y.Z`.
-  - No MVP, roda na `main`. No git flow, roda dentro da branch `release/*` ou `hotfix/*`.
-  - Substitui o release-please, que exige uma branch única de release e conflita com o git flow.
+  O passo a passo está em [versionamento](../../processo/versionamento.md#git-flow).
+- **Geração de versão:** o **`commit-and-tag-version`** roda dentro da branch `release/*` ou `hotfix/*`. Ele calcula a versão pelos Conventional Commits, atualiza o CHANGELOG e as versões (web, Tauri, Gradle) e cria o commit `chore(release): X.Y.Z`. A tag `vX.Y.Z` é criada no commit de merge da `main`. Essa ferramenta substitui o release-please, que exige uma branch única de release e conflita com o git flow.
 - **Workflows:**
 
   | Workflow | Gatilho | Faz |

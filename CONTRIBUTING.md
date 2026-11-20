@@ -26,5 +26,4 @@ Detalhes (tipos, escopos, efeito na versão, branches e releases) em [`docs/proc
 
 ## Branches
 
-- **MVP (até `v1.0.0`):** trabalho direto na `main`.
-- **Depois:** git flow padrão. `feature/*` sai da `develop` e volta para ela; `release/*` e `hotfix/*` vão para a `main` e para a `develop`. Detalhes em [`docs/processo/versionamento.md`](docs/processo/versionamento.md#git-flow-após-o-mvp).
+**Git flow desde o início:** `feature/*` sai da `develop` e volta para ela; `release/*` e `hotfix/*` vão para a `main` e para a `develop`. Detalhes em [`docs/processo/versionamento.md`](docs/processo/versionamento.md#git-flow).
