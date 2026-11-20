@@ -211,7 +211,7 @@ Atualizar `docs/adr/README.md`.
 **Verificar:** `pnpm --filter @cifrasync/web build`.
 **Depende de:** T25, T26
 
-### [ ] T31: Repertórios
+### [x] T31: Repertórios
 **Fazer:**
 - lista e CRUD de repertórios;
 - adicionar músicas pela busca;
