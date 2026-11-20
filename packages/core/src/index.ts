@@ -6,3 +6,5 @@ export * from './song';
 export * from './format';
 export * from './song-transform';
 export * from './chordpro';
+export * from './instruments';
+export * from './voicings';

@@ -142,12 +142,12 @@ Atualizar `docs/adr/README.md`.
 **Verificar:** `pnpm --filter @cifrasync/core test`.
 **Depende de:** T16
 
-### [ ] T18: Instrumentos e dataset de acordes
+### [x] T18: Instrumentos e dataset de acordes
 **Fazer:** definição de instrumentos e afinações (violão, cavaco/banjo, ukulele). Script de build que converte o dataset MIT de violão e ukulele num JSON compacto em `packages/core/data/`, com o aviso de licença.
 **Verificar:** `pnpm --filter @cifrasync/core build`.
 **Depende de:** T11
 
-### [ ] T19: Gerador de posições
+### [x] T19: Gerador de posições
 **Fazer:** `generateVoicings` (busca em janelas de 4 casas, restrições de notas obrigatórias e de baixo, máx. 4 dedos com pestana, pontuação) e `getVoicings`, que junta o dataset com o gerador e remove duplicadas.
 **Verificar:** `pnpm --filter @cifrasync/core test` (≥ 3 posições para os 9 acordes do critério da SPEC nos 3 instrumentos).
 **Depende de:** T18
