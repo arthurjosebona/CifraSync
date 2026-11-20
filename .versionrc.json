@@ -2,24 +2,95 @@
   "tagPrefix": "v",
   "header": "# Changelog\n\nTodas as mudanças relevantes do CifraSync. Gerado a partir dos Conventional Commits.\n",
   "types": [
-    { "type": "feat", "section": "Funcionalidades" },
-    { "type": "fix", "section": "Correções" },
-    { "type": "perf", "section": "Desempenho" },
-    { "type": "refactor", "section": "Refatorações", "hidden": true },
-    { "type": "docs", "section": "Documentação", "hidden": true },
-    { "type": "test", "section": "Testes", "hidden": true },
-    { "type": "build", "section": "Build", "hidden": true },
-    { "type": "ci", "section": "CI", "hidden": true },
-    { "type": "chore", "hidden": true },
-    { "type": "style", "hidden": true }
+    {
+      "type": "feat",
+      "section": "Funcionalidades"
+    },
+    {
+      "type": "fix",
+      "section": "Correções"
+    },
+    {
+      "type": "perf",
+      "section": "Desempenho"
+    },
+    {
+      "type": "refactor",
+      "section": "Refatorações",
+      "hidden": true
+    },
+    {
+      "type": "docs",
+      "section": "Documentação",
+      "hidden": true
+    },
+    {
+      "type": "test",
+      "section": "Testes",
+      "hidden": true
+    },
+    {
+      "type": "build",
+      "section": "Build",
+      "hidden": true
+    },
+    {
+      "type": "ci",
+      "section": "CI",
+      "hidden": true
+    },
+    {
+      "type": "chore",
+      "hidden": true
+    },
+    {
+      "type": "style",
+      "hidden": true
+    }
   ],
   "releaseCommitMessageFormat": "chore(release): {{currentTag}}",
-  "packageFiles": [{ "filename": "package.json", "type": "json" }],
+  "packageFiles": [
+    {
+      "filename": "package.json",
+      "type": "json"
+    }
+  ],
   "bumpFiles": [
-    { "filename": "package.json", "type": "json" },
-    { "filename": "packages/core/package.json", "type": "json" },
-    { "filename": "packages/shared/package.json", "type": "json" },
-    { "filename": "packages/sync/package.json", "type": "json" },
-    { "filename": "apps/web/package.json", "type": "json" }
+    {
+      "filename": "package.json",
+      "type": "json"
+    },
+    {
+      "filename": "packages/core/package.json",
+      "type": "json"
+    },
+    {
+      "filename": "packages/shared/package.json",
+      "type": "json"
+    },
+    {
+      "filename": "packages/sync/package.json",
+      "type": "json"
+    },
+    {
+      "filename": "apps/web/package.json",
+      "type": "json"
+    },
+    {
+      "filename": "apps/desktop/package.json",
+      "type": "json"
+    },
+    {
+      "filename": "apps/desktop/src-tauri/tauri.conf.json",
+      "type": "json"
+    },
+    {
+      "filename": "apps/desktop/src-tauri/Cargo.toml",
+      "updater": "scripts/version-updaters/cargo.cjs"
+    },
+    {
+      "filename": "apps/android/package.json",
+      "type": "json"
+    }
   ]
 }

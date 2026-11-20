@@ -76,10 +76,10 @@ Na `main`, só merge commit. Na `develop`, só squash.
 Atualizar `docs/adr/README.md`.
 **Verificar:** os links do índice de ADRs abrem os arquivos (checagem com `markdown-link-check` ou revisão manual).
 
-### [ ] T9: Release v0.1.0
+### [x] T9: Release v0.1.0
 **Fazer:** fluxo de release, que se repete em todas as fases:
 1. O Claude cria `release/0.1.0` a partir da `develop` atualizada.
-2. O Claude roda `pnpm release --release-as 0.1.0 --skip.tag` (CHANGELOG + versões + commit `chore(release): v0.1.0`) e faz o push. Nas releases seguintes, sem `--release-as`: a versão sai dos commits.
+2. O Claude roda `pnpm release --release-as 0.1.0 --skip.tag` (CHANGELOG + versões + commit `chore(release): v0.1.0`) e faz o push. Nas releases seguintes do MVP, `--release-as minor` (antes da 1.0 a ferramenta trataria `feat` como patch).
 3. O Claude abre o PR `release/0.1.0` → `main`.
 4. **O autor** revisa e mergeia com merge commit.
 5. O Claude cria e envia a tag `v0.1.0` no commit de merge da `main`.
@@ -157,12 +157,12 @@ Atualizar `docs/adr/README.md`.
 **Verificar:** `pnpm --filter @cifrasync/core test`.
 **Depende de:** T13
 
-### [ ] T21: Revisão das posições de cavaco e ukulele [H]
+### [x] T21: Revisão das posições de cavaco e ukulele [H]
 **Fazer:** o Claude gera, com um script do `core` (SVG simples, sem depender da UI da Fase 2), uma página estática com os diagramas das 15 posições mais comuns de cavaco e ukulele. O autor marca as que não fazem sentido, e o Claude ajusta a pontuação ou cria exceções.
 **Verificar:** `pnpm --filter @cifrasync/core test` depois dos ajustes.
 **Depende de:** T19
 
-### [ ] T22: Release v0.2.0
+### [x] T22: Release v0.2.0
 **Fazer:** [fluxo de release](#t9-release-v010) para `v0.2.0` (`release/0.2.0`).
 **Verificar:** tag no remoto; CI verde.
 **Depende de:** T10–T21
@@ -171,47 +171,47 @@ Atualizar `docs/adr/README.md`.
 
 **Branches:** `feature/spa-base` (T23–T24, T32) · `feature/banco-local` (T26) · `feature/biblioteca-editor` (T25, T27–T30) · `feature/repertorios` (T31) · `feature/ajustes-spa` (correções da T33)
 
-### [ ] T23: Base da SPA
+### [x] T23: Base da SPA
 **Fazer:** `apps/web` com Vite + React + TS, React Router (rotas vazias: biblioteca, música, editor, repertórios, grupos, palco, dicionário, configurações, login), Tailwind, tema claro/escuro e layout responsivo com navegação inferior no celular e lateral no desktop.
 **Verificar:** `pnpm --filter @cifrasync/web build`.
 **Depende de:** T2
 
-### [ ] T24: Schemas compartilhados
+### [x] T24: Schemas compartilhados
 **Fazer:** `packages/shared` com os schemas Zod de todas as entidades, colunas de sync, papéis, limites e configurações de tela com os valores padrão.
 **Verificar:** `pnpm --filter @cifrasync/shared build`.
 **Depende de:** T2
 
-### [ ] T25: Componente de diagrama de acorde
+### [x] T25: Componente de diagrama de acorde
 **Fazer:** `ChordDiagram` em SVG próprio (n cordas, casa inicial, pestana, X/O, modo canhoto espelhado, tamanhos).
 **Verificar:** `pnpm --filter @cifrasync/web build`.
 **Depende de:** T19, T23
 
-### [ ] T26: Banco local
+### [x] T26: Banco local
 **Fazer:** `packages/sync` com o schema Dexie (tabelas espelho, fila, meta, índice de busca), repositórios de leitura/escrita que gravam o registro e a mutação na mesma transação, `deviceId` e UUID v7.
 **Verificar:** `pnpm --filter @cifrasync/sync test` (fake-indexeddb).
 **Depende de:** T24
 
-### [ ] T27: Biblioteca de músicas
+### [x] T27: Biblioteca de músicas
 **Fazer:** lista com `useLiveQuery`; busca por título, artista, tom, estilo e trecho da letra (sem acento); ordenação; ação "nova música".
 **Verificar:** `pnpm --filter @cifrasync/web build`.
 **Depende de:** T23, T26
 
-### [ ] T28: Visualização da música
+### [x] T28: Visualização da música
 **Fazer:** `SongView`, que renderiza o AST (acordes posicionados sobre a sílaba e cores de cada marcação), com controles de transposição, capo (formas/como soa) e grafia ♯/♭.
 **Verificar:** `pnpm --filter @cifrasync/web build`.
 **Depende de:** T17, T27
 
-### [ ] T29: Editor de cifra
+### [x] T29: Editor de cifra
 **Fazer:** CodeMirror 6 com destaque próprio, formatação automática ao colar e pelo botão *Formatar*, relatório de detecção, botões Refrão 1/2/3, 2ª voz (linha e trecho), Tab/Solo e Nota, campos de metadados e preview lado a lado (desktop) ou em abas (celular).
 **Verificar:** `pnpm --filter @cifrasync/web build`.
 **Depende de:** T14, T28
 
-### [ ] T30: Dicionário e preferência de posição
+### [x] T30: Dicionário e preferência de posição
 **Fazer:** tela Dicionário (instrumento, fundamental, tipo, todas as posições) e escolha da posição preferida por acorde, global ou por música, salva em `chord_prefs`.
 **Verificar:** `pnpm --filter @cifrasync/web build`.
 **Depende de:** T25, T26
 
-### [ ] T31: Repertórios
+### [x] T31: Repertórios
 **Fazer:**
 - lista e CRUD de repertórios;
 - adicionar músicas pela busca;
@@ -222,7 +222,7 @@ Atualizar `docs/adr/README.md`.
 **Verificar:** `pnpm --filter @cifrasync/web build`.
 **Depende de:** T27
 
-### [ ] T32: PWA offline
+### [x] T32: PWA offline
 **Fazer:** vite-plugin-pwa (precache da SPA, manifest, ícones provisórios), `navigator.storage.persist()` e aviso de nova versão.
 **Verificar:** `pnpm --filter @cifrasync/web build` gera o service worker.
 **Depende de:** T23
@@ -241,17 +241,17 @@ Atualizar `docs/adr/README.md`.
 
 **Branches:** `feature/palco-paginacao` (T35–T38) · `feature/palco-rolagem` (T39–T40) · `feature/palco-acordes-config` (T41–T42) · `feature/palco-e2e` (T43) · `feature/ajustes-palco` (correções da T44)
 
-### [ ] T35: Camada de plataforma (web)
+### [x] T35: Camada de plataforma (web)
 **Fazer:** interface `Platform` e implementação web (Wake Lock, Fullscreen, armazenamento do token, salvar/abrir arquivo, verificar atualização), com detecção da plataforma em tempo de execução.
 **Verificar:** `pnpm --filter @cifrasync/web build`.
 **Depende de:** T23
 
-### [ ] T36: Motor de paginação
+### [x] T36: Motor de paginação
 **Fazer:** medição de unidades indivisíveis, distribuição em páginas, colunas 1/2/auto, recálculo com `ResizeObserver`, memoização por música/tom/capo/configuração.
 **Verificar:** `pnpm --filter @cifrasync/web build` e testes unitários da distribuição.
 **Depende de:** T28
 
-### [ ] T37: Tela do palco e paginação por toque
+### [x] T37: Tela do palco e paginação por toque
 **Fazer:**
 - `StageView` em tela cheia, com cabeçalho mínimo;
 - zonas de toque (direita/esquerda, invertíveis);
@@ -263,7 +263,7 @@ Atualizar `docs/adr/README.md`.
 **Verificar:** `pnpm --filter @cifrasync/web build`.
 **Depende de:** T35, T36
 
-### [ ] T38: Execução de repertório
+### [x] T38: Execução de repertório
 **Fazer:**
 - próxima e anterior música, gaveta com a lista e os momentos;
 - avisos de última página e de fim do repertório;
@@ -275,22 +275,22 @@ Atualizar `docs/adr/README.md`.
 **Verificar:** `pnpm --filter @cifrasync/web build`.
 **Depende de:** T31, T37
 
-### [ ] T39: Rolagem automática
+### [x] T39: Rolagem automática
 **Fazer:** loop com `requestAnimationFrame` e acumulador; velocidade fixa ou calculada pela duração; atraso inicial; play/pause, ±velocidade, inverter, salto; velocidade salva por música.
 **Verificar:** `pnpm --filter @cifrasync/web build`.
 **Depende de:** T37
 
-### [ ] T40: Modo híbrido
+### [x] T40: Modo híbrido
 **Fazer:** pausar a escrita da rolagem durante interação manual (pointer, wheel, touch) e retomar da nova posição, com atraso de retomada configurável; toques laterais = meia tela.
 **Verificar:** `pnpm --filter @cifrasync/web build`.
 **Depende de:** T39
 
-### [ ] T41: Coluna de acordes e faixa de referência
+### [x] T41: Coluna de acordes e faixa de referência
 **Fazer:** coluna lateral com os acordes usados (transpostos e com capo aplicado), troca de posição ao tocar no diagrama, recolhível no retrato; faixa de referência opcional.
 **Verificar:** `pnpm --filter @cifrasync/web build`.
 **Depende de:** T25, T37
 
-### [ ] T42: Configurações de tela
+### [x] T42: Configurações de tela
 **Fazer:**
 - tela de configurações com pré-visualização ao vivo;
 - tipografia, cores por elemento e estilo do refrão;
@@ -301,7 +301,7 @@ Atualizar `docs/adr/README.md`.
 **Verificar:** `pnpm --filter @cifrasync/web build`.
 **Depende de:** T26, T37
 
-### [ ] T43: Testes e2e do palco
+### [x] T43: Testes e2e do palco
 **Fazer:** Playwright (Chromium e WebKit) cobrindo:
 - paginação por toque;
 - a página nunca começar com uma letra separada da sua cifra;
@@ -337,12 +337,12 @@ Incluir no CI.
 **Verificar:** o deploy de produção da SPA abre em `*.vercel.app`.
 **Depende de:** T34
 
-### [ ] T47: Schema do servidor e migrations
+### [x] T47: Schema do servidor e migrations
 **Fazer:** schema Drizzle (tabelas do domínio, colunas de sync, sequência global e trigger de `seq`, índices, `applied_mutations`), migrations SQL versionadas, seed de desenvolvimento com usuários e dados de teste.
 **Verificar:** `pnpm --filter @cifrasync/web db:generate` gera o SQL sem diferença pendente; `tsc` sem erro.
 **Depende de:** T24
 
-### [ ] T48: API base e autenticação
+### [x] T48: API base e autenticação
 **Fazer:**
 - entrada `api/[[...route]].ts` com app Hono;
 - Better Auth (e-mail/senha, plugins `username` e `bearer`, sessão de 60 dias);
@@ -352,12 +352,12 @@ Incluir no CI.
 **Verificar:** `pnpm --filter @cifrasync/web build` (inclui as funções).
 **Depende de:** T46, T47
 
-### [ ] T49: Telas de cadastro e login
+### [x] T49: Telas de cadastro e login
 **Fazer:** cadastro (e-mail, senha, nome de usuário único com checagem), login, logout, sessão no cliente (cookie na web, token bearer via `Platform`), fluxo de sessão expirada sem bloquear o uso offline.
 **Verificar:** `pnpm --filter @cifrasync/web build`.
 **Depende de:** T48
 
-### [ ] T50: Endpoint de push
+### [x] T50: Endpoint de push
 **Fazer:** `sync/push`:
 - validação Zod e transação única;
 - autorização por tabela;
@@ -368,12 +368,12 @@ Incluir no CI.
 **Verificar:** `pnpm --filter @cifrasync/web build` e testes de integração contra Postgres local compilam.
 **Depende de:** T48
 
-### [ ] T51: Endpoint de pull
+### [x] T51: Endpoint de pull
 **Fazer:** `sync/pull` com escopo próprio (dono + configurações) e paginação por `seq`, retornando o novo cursor (os escopos de grupo vêm na T57).
 **Verificar:** `pnpm --filter @cifrasync/web build`.
 **Depende de:** T48
 
-### [ ] T52: Motor de sync no cliente
+### [x] T52: Motor de sync no cliente
 **Fazer:**
 - ciclo push → pull com lock entre abas;
 - gatilhos: abertura, login, `online`, debounce de 2 s após editar, 60 s em primeiro plano e botão manual;
@@ -383,12 +383,12 @@ Incluir no CI.
 **Verificar:** `pnpm --filter @cifrasync/sync test`.
 **Depende de:** T26, T50, T51
 
-### [ ] T53: Indicador de sync e primeiro login
+### [x] T53: Indicador de sync e primeiro login
 **Fazer:** indicador na barra (sincronizado, sincronizando, pendentes, erro) e download inicial completo ao logar num dispositivo novo, com progresso.
 **Verificar:** `pnpm --filter @cifrasync/web build`.
 **Depende de:** T49, T52
 
-### [ ] T54: Testes de integração do sync
+### [x] T54: Testes de integração do sync
 **Fazer:** Postgres de serviço no CI e testes simulando 2 dispositivos (edição offline, conflito de letra gera cópia, exclusão propaga, reenvio idempotente).
 **Verificar:** `pnpm test` compila e roda no CI.
 **Depende de:** T52
@@ -410,22 +410,22 @@ Incluir no CI.
 
 **Branches:** `feature/grupos-api` (T57–T59) · `feature/grupos-ui` (T60–T61) · `feature/ajustes-grupos` (correções da T62)
 
-### [ ] T57: Escopos de grupo no pull
+### [x] T57: Escopos de grupo no pull
 **Fazer:** cursor por escopo `group:<id>` (grupo, membros, perfis, repertórios compartilhados, itens e músicas referenciadas, incluindo a regra "item mudou → envia música antiga"); `revokedScopes` ao sair ou ser removido; limpeza local no cliente.
 **Verificar:** `pnpm --filter @cifrasync/web build` e `pnpm --filter @cifrasync/sync test`.
 **Depende de:** T51, T52
 
-### [ ] T58: API de usuários e convites
+### [x] T58: API de usuários e convites
 **Fazer:** `users/search` (prefixo, mín. 3 caracteres, máx. 10 resultados, com rate limit), criar convite (só o dono, limites de 10 grupos e 30 membros), aceitar e recusar.
 **Verificar:** `pnpm --filter @cifrasync/web build`.
 **Depende de:** T48
 
-### [ ] T59: Permissões de grupo no push
+### [x] T59: Permissões de grupo no push
 **Fazer:** regras da tabela da SPEC §4 para `groups`, `group_members`, `group_setlists`, `setlists` e `setlist_items` compartilhados, além do bloqueio de edição de música de outro usuário.
 **Verificar:** `pnpm --filter @cifrasync/web build` e testes de permissão compilam.
 **Depende de:** T50
 
-### [ ] T60: Telas de grupos
+### [x] T60: Telas de grupos
 **Fazer:**
 - lista de grupos e convites pendentes;
 - criar grupo;
@@ -437,7 +437,7 @@ Incluir no CI.
 **Verificar:** `pnpm --filter @cifrasync/web build`.
 **Depende de:** T57, T58, T59
 
-### [ ] T61: Polling de grupo
+### [x] T61: Polling de grupo
 **Fazer:** intervalo de 15 s com a tela de um repertório de grupo aberta e sync ao entrar no palco de um repertório de grupo.
 **Verificar:** `pnpm --filter @cifrasync/sync test`.
 **Depende de:** T57
@@ -456,12 +456,12 @@ Incluir no CI.
 
 **Branches:** `feature/desktop-tauri` (T64–T65) · `feature/desktop-release` (T66–T67) · `feature/ajustes-desktop` (correções da T68)
 
-### [ ] T64: Projeto Tauri
+### [x] T64: Projeto Tauri
 **Fazer:** `apps/desktop` com Tauri 2 carregando `apps/web/dist`; identificador e ícones; janela com tamanho mínimo; plugins de store (token), fullscreen, diálogo e arquivos; implementação `Platform` desktop.
 **Verificar:** `pnpm --filter @cifrasync/desktop tauri build --debug` no CI (Windows e Linux).
 **Depende de:** T35, T56
 
-### [ ] T65: Tela sempre ligada no desktop
+### [x] T65: Tela sempre ligada no desktop
 **Fazer:** comando Rust com a crate `keepawake` (Windows e Linux), chamado pela camada `Platform` ao entrar e sair do palco.
 **Verificar:** `cargo check` em `apps/desktop/src-tauri`.
 **Depende de:** T64
@@ -471,7 +471,7 @@ Incluir no CI.
 **Verificar:** os secrets aparecem na lista do repositório (`gh secret list`).
 **Depende de:** T64
 
-### [ ] T67: Updater e build de release do desktop
+### [x] T67: Updater e build de release do desktop
 **Fazer:**
 - plugin updater apontando para o `latest.json` da última release;
 - verificação de atualização na abertura;
@@ -495,7 +495,7 @@ Incluir no CI.
 
 **Branches:** `feature/android-capacitor` (T70) · `feature/android-release` (T71–T72) · `feature/ajustes-android` (correções da T73)
 
-### [ ] T70: Projeto Capacitor
+### [x] T70: Projeto Capacitor
 **Fazer:**
 - `apps/android` com Capacitor (`androidScheme: https`, `minSdk` do Android 7);
 - plugins de tela ligada, orientação, barra de status/imersivo, preferências (token), filesystem/share;
@@ -510,7 +510,7 @@ Incluir no CI.
 **Verificar:** `gh secret list` mostra os 4 secrets.
 **Depende de:** T70
 
-### [ ] T72: APK assinado na release e aviso de versão
+### [x] T72: APK assinado na release e aviso de versão
 **Fazer:**
 - job Android no `release-build.yml` (`assembleRelease` assinado, nome `cifrasync-X.Y.Z.apk`);
 - `versionName`/`versionCode` derivados da tag;
@@ -540,22 +540,22 @@ O Claude corrige.
 
 **Branches:** `feature/import-export` (T75) · `feature/conta-sobre` (T76) · `feature/acessibilidade` (T77) · `feature/seguranca-desempenho` (T78) · `feature/ajustes-criterios` (correções da T79) · `feature/docs-v1` (T80) · `feature/identidade-visual` (nome e ícone da T81)
 
-### [ ] T75: Importação e exportação
+### [x] T75: Importação e exportação
 **Fazer:** importar `.txt` (com formatação automática) e `.cho`; exportar uma música (`.txt`/`.cho`); backup completo JSON (`/api/export` e local); restauração do backup.
 **Verificar:** `pnpm build`.
 **Depende de:** T20, T53
 
-### [ ] T76: Conta e "Sobre"
+### [x] T76: Conta e "Sobre"
 **Fazer:** excluir conta (API + limpeza local), tela "Sobre" com versão e plataforma, link para o repositório e aviso de que o projeto foi feito com auxílio de IA.
 **Verificar:** `pnpm build`.
 **Depende de:** T49
 
-### [ ] T77: Acessibilidade e mensagens
+### [x] T77: Acessibilidade e mensagens
 **Fazer:** contraste AA nos temas e presets, foco visível, alvos ≥ 44 px, rótulos ARIA, mensagens de erro em português.
 **Verificar:** `pnpm build` e `pnpm lint` (regras jsx-a11y).
 **Depende de:** T42, T60
 
-### [ ] T78: Revisão de segurança e desempenho
+### [x] T78: Revisão de segurança e desempenho
 **Fazer:**
 - autorização em todas as rotas;
 - rate limits;
@@ -575,7 +575,7 @@ Corrigir o que for encontrado.
 **Verificar:** todos os critérios marcados no checklist; `pnpm build` verde.
 **Depende de:** T78
 
-### [ ] T80: Documentação final
+### [x] T80: Documentação final
 **Fazer:** README com instalação por plataforma (avisos do SmartScreen e de fontes externas, Obtainium), como rodar localmente, arquitetura resumida e links para os ADRs. `docs/README.md` e as etapas da `specs/01-mvp` atualizados.
 **Verificar:** links verificados.
 **Depende de:** T79

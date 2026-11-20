@@ -31,3 +31,7 @@ Thumbs.db
 !.vscode/extensions.json
 *.log
 packages/core/review/
+test-results/
+playwright-report/
+.data/
+.env.local

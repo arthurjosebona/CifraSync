@@ -1,18 +1,28 @@
 {
   "name": "@cifrasync/sync",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
   "type": "module",
   "exports": {
     ".": {
+      "source": "./src/index.ts",
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     }
   },
   "scripts": {
-    "build": "tsc -p tsconfig.build.json",
+    "build": "tsup src/index.ts --format esm --dts --clean --target es2022 --tsconfig tsconfig.build.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "lint": "eslint .",
     "test": "vitest run --passWithNoTests"
+  },
+  "dependencies": {
+    "@cifrasync/core": "workspace:*",
+    "@cifrasync/shared": "workspace:*",
+    "dexie": "4.4.7",
+    "fractional-indexing": "^4.0.0"
+  },
+  "devDependencies": {
+    "fake-indexeddb": "6.2.8"
   }
 }
