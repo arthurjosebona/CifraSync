@@ -76,10 +76,10 @@ Na `main`, só merge commit. Na `develop`, só squash.
 Atualizar `docs/adr/README.md`.
 **Verificar:** os links do índice de ADRs abrem os arquivos (checagem com `markdown-link-check` ou revisão manual).
 
-### [ ] T9: Release v0.1.0
+### [x] T9: Release v0.1.0
 **Fazer:** fluxo de release, que se repete em todas as fases:
 1. O Claude cria `release/0.1.0` a partir da `develop` atualizada.
-2. O Claude roda `pnpm release --release-as 0.1.0 --skip.tag` (CHANGELOG + versões + commit `chore(release): v0.1.0`) e faz o push. Nas releases seguintes, sem `--release-as`: a versão sai dos commits.
+2. O Claude roda `pnpm release --release-as 0.1.0 --skip.tag` (CHANGELOG + versões + commit `chore(release): v0.1.0`) e faz o push. Nas releases seguintes do MVP, `--release-as minor` (antes da 1.0 a ferramenta trataria `feat` como patch).
 3. O Claude abre o PR `release/0.1.0` → `main`.
 4. **O autor** revisa e mergeia com merge commit.
 5. O Claude cria e envia a tag `v0.1.0` no commit de merge da `main`.
@@ -211,7 +211,7 @@ Atualizar `docs/adr/README.md`.
 **Verificar:** `pnpm --filter @cifrasync/web build`.
 **Depende de:** T25, T26
 
-### [ ] T31: Repertórios
+### [x] T31: Repertórios
 **Fazer:**
 - lista e CRUD de repertórios;
 - adicionar músicas pela busca;

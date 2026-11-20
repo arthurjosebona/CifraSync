@@ -20,3 +20,4 @@ Registro dos pedidos feitos à IA, em ordem, para manter a rastreabilidade de co
 | [0005](0005-git-flow-desde-o-inicio.md) | 2026-11-20 | TASKS (ajuste) | 01-mvp | Git flow aplicado desde o início do projeto |
 | [0006](0006-aprovacao-tasks-e-t1.md) | 2026-11-20 | Implementação | 01-mvp | Aprovação do TASKS, push inicial e criação da develop (T1) |
 | [0007](0007-execucao-autonoma-fases-0-e-1.md) | 2026-11-20 | Implementação | 01-mvp | Execução das Fases 0 e 1 até as tarefas que dependem do autor |
+| [0008](0008-repo-publico-release-e-fase-2.md) | 2026-11-20 | Implementação | 01-mvp | Release 0.1.0, correção do CI e Fase 2 (SPA local) |

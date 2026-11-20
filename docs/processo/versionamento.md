@@ -68,7 +68,7 @@ gitGraph
 
 ### Geração de versão
 
-O **`commit-and-tag-version`** lê os Conventional Commits desde a última tag. Antes da `1.0.0`, mudanças que quebram compatibilidade sobem o MINOR.
+O **`commit-and-tag-version`** lê os Conventional Commits desde a última tag. Antes da `1.0.0` a ferramenta trata `feat` como PATCH; por isso, no MVP, cada fase usa `pnpm release --release-as minor --skip.tag` (uma versão MINOR por fase). A partir da `1.0.0`, a versão sai dos commits sem `--release-as`.
 
 **Release:**
 1. Criar `release/X.Y.Z` a partir da `develop`. Para saber o X.Y.Z, rodar `pnpm release --dry-run` na `develop`.
