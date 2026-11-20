@@ -181,7 +181,7 @@ Atualizar `docs/adr/README.md`.
 **Verificar:** `pnpm --filter @cifrasync/shared build`.
 **Depende de:** T2
 
-### [ ] T25: Componente de diagrama de acorde
+### [x] T25: Componente de diagrama de acorde
 **Fazer:** `ChordDiagram` em SVG próprio (n cordas, casa inicial, pestana, X/O, modo canhoto espelhado, tamanhos).
 **Verificar:** `pnpm --filter @cifrasync/web build`.
 **Depende de:** T19, T23
