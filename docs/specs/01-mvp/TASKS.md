@@ -162,7 +162,7 @@ Atualizar `docs/adr/README.md`.
 **Verificar:** `pnpm --filter @cifrasync/core test` depois dos ajustes.
 **Depende de:** T19
 
-### [ ] T22: Release v0.2.0
+### [x] T22: Release v0.2.0
 **Fazer:** [fluxo de release](#t9-release-v010) para `v0.2.0` (`release/0.2.0`).
 **Verificar:** tag no remoto; CI verde.
 **Depende de:** T10–T21
