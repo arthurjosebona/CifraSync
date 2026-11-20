@@ -60,6 +60,8 @@ export interface SettingsState {
   /** Dados crus de cada escopo, para editar sem perder o que não foi alterado. */
   global: Record<string, unknown>;
   device: Record<string, unknown>;
+  /** false enquanto o banco local ainda não respondeu. */
+  loaded: boolean;
 }
 
 /** Configurações efetivas: padrões ← globais da conta ← override deste dispositivo. */
@@ -67,5 +69,10 @@ export function useSettings(): SettingsState {
   const rows = useLiveQuery(() => getSettingsRows(db), []);
   const global = (rows?.global?.data ?? {}) as Record<string, unknown>;
   const device = (rows?.device?.data ?? {}) as Record<string, unknown>;
-  return { settings: parseAppSettings(deepMerge(global, device)), global, device };
+  return {
+    settings: parseAppSettings(deepMerge(global, device)),
+    global,
+    device,
+    loaded: rows !== undefined,
+  };
 }

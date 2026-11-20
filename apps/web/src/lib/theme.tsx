@@ -1,9 +1,13 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 
+import { useSettings } from './data';
+import { updateSettings } from './settings';
+
 export type ThemePreference = 'light' | 'dark' | 'system';
 
 const STORAGE_KEY = 'cifrasync:tema';
 
+/** Cópia local do tema só para a primeira pintura, antes do banco carregar (sem piscar). */
 function readStored(): ThemePreference {
   try {
     const v = localStorage.getItem(STORAGE_KEY);
@@ -12,6 +16,14 @@ function readStored(): ThemePreference {
     // armazenamento indisponível (janela privada, preview): usa o padrão
   }
   return 'system';
+}
+
+function storeLocal(p: ThemePreference) {
+  try {
+    localStorage.setItem(STORAGE_KEY, p);
+  } catch {
+    // ignora: o tema continua salvo nas configurações
+  }
 }
 
 function systemPrefersDark(): boolean {
@@ -27,7 +39,9 @@ interface ThemeContextValue {
 const ThemeContext = createContext<ThemeContextValue | null>(null);
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [preference, setPreferenceState] = useState<ThemePreference>(readStored);
+  const { settings, global, loaded } = useSettings();
+  const [initial] = useState<ThemePreference>(readStored);
+  const preference: ThemePreference = loaded ? settings.theme : initial;
   const [systemDark, setSystemDark] = useState(systemPrefersDark);
 
   useEffect(() => {
@@ -42,22 +56,19 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', resolved === 'dark');
-  }, [resolved]);
+    storeLocal(preference);
+  }, [resolved, preference]);
 
   const value = useMemo<ThemeContextValue>(
     () => ({
       preference,
       resolved,
       setPreference: (p) => {
-        setPreferenceState(p);
-        try {
-          localStorage.setItem(STORAGE_KEY, p);
-        } catch {
-          // ignora: a preferência vale só nesta sessão
-        }
+        storeLocal(p);
+        void updateSettings(global, { theme: p });
       },
     }),
-    [preference, resolved],
+    [preference, resolved, global],
   );
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;

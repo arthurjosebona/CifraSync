@@ -290,7 +290,7 @@ Atualizar `docs/adr/README.md`.
 **Verificar:** `pnpm --filter @cifrasync/web build`.
 **Depende de:** T25, T37
 
-### [ ] T42: Configurações de tela
+### [x] T42: Configurações de tela
 **Fazer:**
 - tela de configurações com pré-visualização ao vivo;
 - tipografia, cores por elemento e estilo do refrão;
