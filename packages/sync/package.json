@@ -15,5 +15,14 @@
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "lint": "eslint .",
     "test": "vitest run --passWithNoTests"
+  },
+  "dependencies": {
+    "@cifrasync/core": "workspace:*",
+    "@cifrasync/shared": "workspace:*",
+    "dexie": "4.4.7",
+    "fractional-indexing": "^4.0.0"
+  },
+  "devDependencies": {
+    "fake-indexeddb": "6.2.8"
   }
 }
