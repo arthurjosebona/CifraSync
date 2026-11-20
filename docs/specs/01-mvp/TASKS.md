@@ -176,7 +176,7 @@ Atualizar `docs/adr/README.md`.
 **Verificar:** `pnpm --filter @cifrasync/web build`.
 **Depende de:** T2
 
-### [ ] T24: Schemas compartilhados
+### [x] T24: Schemas compartilhados
 **Fazer:** `packages/shared` com os schemas Zod de todas as entidades, colunas de sync, papéis, limites e configurações de tela com os valores padrão.
 **Verificar:** `pnpm --filter @cifrasync/shared build`.
 **Depende de:** T2
