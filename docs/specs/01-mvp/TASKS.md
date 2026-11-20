@@ -76,7 +76,7 @@ Na `main`, só merge commit. Na `develop`, só squash.
 Atualizar `docs/adr/README.md`.
 **Verificar:** os links do índice de ADRs abrem os arquivos (checagem com `markdown-link-check` ou revisão manual).
 
-### [ ] T9: Release v0.1.0
+### [x] T9: Release v0.1.0
 **Fazer:** fluxo de release, que se repete em todas as fases:
 1. O Claude cria `release/0.1.0` a partir da `develop` atualizada.
 2. O Claude roda `pnpm release --release-as 0.1.0 --skip.tag` (CHANGELOG + versões + commit `chore(release): v0.1.0`) e faz o push. Nas releases seguintes, sem `--release-as`: a versão sai dos commits.
