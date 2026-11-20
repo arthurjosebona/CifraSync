@@ -4,7 +4,7 @@
  */
 import { z } from 'zod';
 
-import { InstrumentId, SyncColumns, Id } from './entities';
+import { ChordPrefs, Id, InstrumentId, SyncColumns } from './entities';
 
 const Color = z.string().regex(/^#[0-9a-fA-F]{6}$/);
 
@@ -60,6 +60,8 @@ export type StageSettings = z.infer<typeof StageSettings>;
 export const AppSettings = z.object({
   theme: z.enum(['light', 'dark', 'system']).default('system'),
   stage: StageSettings.default(StageSettings.parse({})),
+  /** Posição preferida por acorde, padrão da conta (cada música pode sobrescrever). */
+  chordPrefs: ChordPrefs.default({}),
 });
 export type AppSettings = z.infer<typeof AppSettings>;
 

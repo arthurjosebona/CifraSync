@@ -191,22 +191,22 @@ Atualizar `docs/adr/README.md`.
 **Verificar:** `pnpm --filter @cifrasync/sync test` (fake-indexeddb).
 **Depende de:** T24
 
-### [ ] T27: Biblioteca de músicas
+### [x] T27: Biblioteca de músicas
 **Fazer:** lista com `useLiveQuery`; busca por título, artista, tom, estilo e trecho da letra (sem acento); ordenação; ação "nova música".
 **Verificar:** `pnpm --filter @cifrasync/web build`.
 **Depende de:** T23, T26
 
-### [ ] T28: Visualização da música
+### [x] T28: Visualização da música
 **Fazer:** `SongView`, que renderiza o AST (acordes posicionados sobre a sílaba e cores de cada marcação), com controles de transposição, capo (formas/como soa) e grafia ♯/♭.
 **Verificar:** `pnpm --filter @cifrasync/web build`.
 **Depende de:** T17, T27
 
-### [ ] T29: Editor de cifra
+### [x] T29: Editor de cifra
 **Fazer:** CodeMirror 6 com destaque próprio, formatação automática ao colar e pelo botão *Formatar*, relatório de detecção, botões Refrão 1/2/3, 2ª voz (linha e trecho), Tab/Solo e Nota, campos de metadados e preview lado a lado (desktop) ou em abas (celular).
 **Verificar:** `pnpm --filter @cifrasync/web build`.
 **Depende de:** T14, T28
 
-### [ ] T30: Dicionário e preferência de posição
+### [x] T30: Dicionário e preferência de posição
 **Fazer:** tela Dicionário (instrumento, fundamental, tipo, todas as posições) e escolha da posição preferida por acorde, global ou por música, salva em `chord_prefs`.
 **Verificar:** `pnpm --filter @cifrasync/web build`.
 **Depende de:** T25, T26
