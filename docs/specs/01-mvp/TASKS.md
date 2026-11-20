@@ -555,7 +555,7 @@ O Claude corrige.
 **Verificar:** `pnpm build` e `pnpm lint` (regras jsx-a11y).
 **Depende de:** T42, T60
 
-### [ ] T78: Revisão de segurança e desempenho
+### [x] T78: Revisão de segurança e desempenho
 **Fazer:**
 - autorização em todas as rotas;
 - rate limits;
