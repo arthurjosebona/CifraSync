@@ -201,7 +201,7 @@ Atualizar `docs/adr/README.md`.
 **Verificar:** `pnpm --filter @cifrasync/web build`.
 **Depende de:** T17, T27
 
-### [ ] T29: Editor de cifra
+### [x] T29: Editor de cifra
 **Fazer:** CodeMirror 6 com destaque próprio, formatação automática ao colar e pelo botão *Formatar*, relatório de detecção, botões Refrão 1/2/3, 2ª voz (linha e trecho), Tab/Solo e Nota, campos de metadados e preview lado a lado (desktop) ou em abas (celular).
 **Verificar:** `pnpm --filter @cifrasync/web build`.
 **Depende de:** T14, T28
