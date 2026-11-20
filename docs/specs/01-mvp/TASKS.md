@@ -46,7 +46,7 @@ Baseado no [PLAN.md](PLAN.md) aprovado. **Git flow desde o início** ([versionam
 **Verificar:** `pnpm release --dry-run` mostra a próxima versão e o CHANGELOG sem alterar arquivos.
 **Depende de:** T4
 
-### [ ] T6: Workflow de CI
+### [x] T6: Workflow de CI
 **Fazer:** `.github/workflows/ci.yml` (Node + pnpm com cache, `lint`, `typecheck`, `test`, `build`), disparado em push de `main`, `develop`, `feature/*`, `release/*`, `hotfix/*` e em PRs. Job de commitlint para o título de PR.
 **Verificar:** `actionlint` sem erros; primeira execução verde no GitHub após o push.
 **Depende de:** T3
