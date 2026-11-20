@@ -111,7 +111,9 @@ export const StageContent = forwardRef<StageContentApi, StageContentProps>(funct
       const cs = getComputedStyle(el);
       return el.offsetHeight + parseFloat(cs.marginTop) + parseFloat(cs.marginBottom);
     });
-    setPages(paginate(heights, keepWithNext(units), size.h));
+    const next = paginate(heights, keepWithNext(units), size.h);
+    // só atualiza se a divisão mudou (evita render em laço)
+    setPages((prev) => (JSON.stringify(prev) === JSON.stringify(next) ? prev : next));
   }, [units, mode, size.h, colWidth, opts, stage.fontSize, stage.lineHeight, stage.fontFamily]);
 
   const spreads = useMemo(() => {
