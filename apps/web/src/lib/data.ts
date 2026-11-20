@@ -12,6 +12,7 @@ import {
   type SongFilter,
 } from '@cifrasync/sync';
 import { useLiveQuery } from 'dexie-react-hooks';
+import { useMemo } from 'react';
 
 export const db = getDb();
 
@@ -67,12 +68,15 @@ export interface SettingsState {
 /** Configurações efetivas: padrões ← globais da conta ← override deste dispositivo. */
 export function useSettings(): SettingsState {
   const rows = useLiveQuery(() => getSettingsRows(db), []);
-  const global = (rows?.global?.data ?? {}) as Record<string, unknown>;
-  const device = (rows?.device?.data ?? {}) as Record<string, unknown>;
-  return {
-    settings: parseAppSettings(deepMerge(global, device)),
-    global,
-    device,
-    loaded: rows !== undefined,
-  };
+  // mesmo objeto enquanto as linhas não mudam: evita refazer layout (palco) a cada render
+  return useMemo(() => {
+    const global = (rows?.global?.data ?? {}) as Record<string, unknown>;
+    const device = (rows?.device?.data ?? {}) as Record<string, unknown>;
+    return {
+      settings: parseAppSettings(deepMerge(global, device)),
+      global,
+      device,
+      loaded: rows !== undefined,
+    };
+  }, [rows]);
 }

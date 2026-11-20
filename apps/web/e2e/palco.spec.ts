@@ -28,13 +28,19 @@ test('paginação por toque e teclado', async ({ page }) => {
   const counter = page.locator('header').getByText(/^1\/\d+$/);
   await expect(counter).toBeVisible();
 
-  const stage = page.locator('.stage .song').last();
-  const box = (await stage.boundingBox())!;
-  await page.mouse.click(box.x + box.width * 0.9, box.y + box.height / 2);
+  // espera as fontes e a medição da página antes de tocar
+  await page.evaluate(() => document.fonts.ready);
+  await page.waitForTimeout(500);
+  const pageArea = page.locator('.stage .flex.h-full').last();
+  const box = (await pageArea.boundingBox())!;
+  const tap = (fx: number) =>
+    pageArea.click({ position: { x: box.width * fx, y: box.height / 2 } });
+
+  await tap(0.9);
   await expect(page.locator('header').getByText(/^2\/\d+$/)).toBeVisible();
 
-  await page.waitForTimeout(350); // proteção contra toque duplo
-  await page.mouse.click(box.x + box.width * 0.1, box.y + box.height / 2);
+  await page.waitForTimeout(400); // proteção contra toque duplo
+  await tap(0.1);
   await expect(page.locator('header').getByText(/^1\/\d+$/)).toBeVisible();
 
   await page.keyboard.press('ArrowRight');
