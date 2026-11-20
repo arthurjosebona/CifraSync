@@ -1,6 +1,6 @@
 # SPEC: CifraSync — produto inicial (MVP multiplataforma)
 
-**Status:** Rascunho
+**Status:** Aprovado (2026-11-20)
 **Data:** 2026-11-20
 **Origem:** prompts [0001](../../prompts/0001-levantamento-e-contexto.md) e [0002](../../prompts/0002-repositorio-e-spec-inicial.md)
 
@@ -171,11 +171,9 @@ Entregar a primeira versão utilizável do CifraSync. Com ela, o músico cadastr
   - recuperação de senha por e-mail;
   - idiomas além do português.
 
-## Em aberto (para decidir no PLAN)
+## Em aberto (decidido no [PLAN](PLAN.md#decisões-dos-pontos-em-aberto-da-spec))
 
 1. Convite de grupo com aceite (pendente → ativo) já no MVP ou entrada direta.
 2. Região do banco de dados (Brasil, se o plano gratuito permitir, ou EUA).
 3. Ambiente de desenvolvimento local do banco (instância de desenvolvimento na nuvem ou banco local em contêiner).
 
----
-Responda **"aprovado"** para gerar o PLAN.md, ou peça ajustes.
