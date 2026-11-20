@@ -410,22 +410,22 @@ Incluir no CI.
 
 **Branches:** `feature/grupos-api` (T57–T59) · `feature/grupos-ui` (T60–T61) · `feature/ajustes-grupos` (correções da T62)
 
-### [ ] T57: Escopos de grupo no pull
+### [x] T57: Escopos de grupo no pull
 **Fazer:** cursor por escopo `group:<id>` (grupo, membros, perfis, repertórios compartilhados, itens e músicas referenciadas, incluindo a regra "item mudou → envia música antiga"); `revokedScopes` ao sair ou ser removido; limpeza local no cliente.
 **Verificar:** `pnpm --filter @cifrasync/web build` e `pnpm --filter @cifrasync/sync test`.
 **Depende de:** T51, T52
 
-### [ ] T58: API de usuários e convites
+### [x] T58: API de usuários e convites
 **Fazer:** `users/search` (prefixo, mín. 3 caracteres, máx. 10 resultados, com rate limit), criar convite (só o dono, limites de 10 grupos e 30 membros), aceitar e recusar.
 **Verificar:** `pnpm --filter @cifrasync/web build`.
 **Depende de:** T48
 
-### [ ] T59: Permissões de grupo no push
+### [x] T59: Permissões de grupo no push
 **Fazer:** regras da tabela da SPEC §4 para `groups`, `group_members`, `group_setlists`, `setlists` e `setlist_items` compartilhados, além do bloqueio de edição de música de outro usuário.
 **Verificar:** `pnpm --filter @cifrasync/web build` e testes de permissão compilam.
 **Depende de:** T50
 
-### [ ] T60: Telas de grupos
+### [x] T60: Telas de grupos
 **Fazer:**
 - lista de grupos e convites pendentes;
 - criar grupo;
@@ -437,7 +437,7 @@ Incluir no CI.
 **Verificar:** `pnpm --filter @cifrasync/web build`.
 **Depende de:** T57, T58, T59
 
-### [ ] T61: Polling de grupo
+### [x] T61: Polling de grupo
 **Fazer:** intervalo de 15 s com a tela de um repertório de grupo aberta e sync ao entrar no palco de um repertório de grupo.
 **Verificar:** `pnpm --filter @cifrasync/sync test`.
 **Depende de:** T57

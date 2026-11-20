@@ -36,25 +36,30 @@ import {
   Trash2,
   X,
 } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
 
 import { Empty, Page } from '../components/Page';
 import { Button, Field, IconButton, Input, Textarea } from '../components/ui';
 import { db, useSetlist, useSetlistItems, useSongs } from '../lib/data';
+import { useCanEditSetlist, useMyId } from '../lib/groups';
 import { itemKey, itemSemitones, setlistAsText } from '../lib/setlist';
+import { syncFastFor } from '../lib/sync';
 
 function SortableRow({
   item,
   number,
   song,
+  readOnly,
 }: {
   item: SetlistItem;
   number: number | null;
   song: Song | undefined;
+  readOnly: boolean;
 }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: item.id,
+    disabled: readOnly,
   });
   const style = { transform: CSS.Transform.toString(transform), transition };
   const shift = (n: number) => {
@@ -68,19 +73,24 @@ function SortableRow({
       style={style}
       className={`flex items-center gap-1 bg-surface px-1 py-1 ${isDragging ? 'relative z-10 shadow-lg' : ''}`}
     >
-      <button
-        type="button"
-        className="flex size-11 shrink-0 cursor-grab touch-none items-center justify-center text-muted"
-        aria-label="Arrastar para reordenar"
-        {...attributes}
-        {...listeners}
-      >
-        <GripVertical className="size-5" />
-      </button>
+      {readOnly ? (
+        <span className="w-2 shrink-0" />
+      ) : (
+        <button
+          type="button"
+          className="flex size-11 shrink-0 cursor-grab touch-none items-center justify-center text-muted"
+          aria-label="Arrastar para reordenar"
+          {...attributes}
+          {...listeners}
+        >
+          <GripVertical className="size-5" />
+        </button>
+      )}
       {item.kind === 'moment' ? (
         <Input
           aria-label="Nome do momento"
           defaultValue={item.label ?? ''}
+          readOnly={readOnly}
           onBlur={(e) => void updateSetlistItem(db, item.id, { label: e.target.value })}
           className="flex-1 border-dashed font-medium italic"
         />
@@ -102,20 +112,25 @@ function SortableRow({
               <span className="block truncate text-xs text-muted">{song.artist}</span>
             )}
           </div>
-          <IconButton label="Meio tom abaixo" onClick={() => shift(-1)}>
+          <IconButton label="Meio tom abaixo" onClick={() => shift(-1)} disabled={readOnly}>
             <Minus className="size-4" />
           </IconButton>
           <span className="w-10 text-center font-mono text-sm font-semibold text-accent">
             {itemKey(item, song) ?? '—'}
           </span>
-          <IconButton label="Meio tom acima" onClick={() => shift(1)}>
+          <IconButton label="Meio tom acima" onClick={() => shift(1)} disabled={readOnly}>
             <Plus className="size-4" />
           </IconButton>
         </>
       )}
-      <IconButton label="Remover do repertório" onClick={() => void removeSetlistItem(db, item.id)}>
-        <X className="size-4" />
-      </IconButton>
+      {!readOnly && (
+        <IconButton
+          label="Remover do repertório"
+          onClick={() => void removeSetlistItem(db, item.id)}
+        >
+          <X className="size-4" />
+        </IconButton>
+      )}
     </li>
   );
 }
@@ -124,6 +139,17 @@ export default function Repertorio() {
   const { id } = useParams();
   const navigate = useNavigate();
   const setlist = useSetlist(id);
+  const canEdit = useCanEditSetlist(setlist);
+  const myId = useMyId();
+  const readOnly = canEdit === false;
+  const isMine = !!setlist && setlist.ownerId === myId;
+  // repertório de grupo aberto: sincroniza a cada 15 s
+  useEffect(() => {
+    if (!setlist || isMine) return;
+    syncFastFor(15_000);
+    const t = setInterval(() => syncFastFor(15_000), 15_000);
+    return () => clearInterval(t);
+  }, [setlist?.id, isMine]); // eslint-disable-line react-hooks/exhaustive-deps
   const items = useSetlistItems(id);
   const allSongs = useSongs();
   const [search, setSearch] = useState('');
@@ -183,6 +209,7 @@ export default function Repertorio() {
         <Field label="Nome">
           <Input
             defaultValue={setlist.name}
+            readOnly={readOnly}
             key={`n${setlist.id}`}
             onBlur={(e) =>
               e.target.value.trim() &&
@@ -193,6 +220,7 @@ export default function Repertorio() {
         <Field label="Data">
           <Input
             type="date"
+            readOnly={readOnly}
             defaultValue={setlist.eventDate ?? ''}
             key={`d${setlist.id}`}
             onChange={(e) =>
@@ -213,6 +241,7 @@ export default function Repertorio() {
                   key={it.id}
                   item={it}
                   number={numbers[i]!}
+                  readOnly={readOnly}
                   song={it.songId ? songs.get(it.songId) : undefined}
                 />
               ))}
@@ -221,52 +250,62 @@ export default function Repertorio() {
         </DndContext>
       )}
 
-      <section className="mt-5 rounded-xl border border-border bg-surface p-4">
-        <h2 className="mb-2 text-sm font-semibold text-muted">Adicionar</h2>
-        <div className="flex gap-2">
-          <Input
-            type="search"
-            placeholder="Buscar música na biblioteca"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-          <Button
-            onClick={() =>
-              void addSetlistItem(db, setlist.id, { kind: 'moment', label: 'Intervalo' })
-            }
-          >
-            + Momento
-          </Button>
-        </div>
-        {search.trim() && (
-          <ul className="mt-2 max-h-64 divide-y divide-border overflow-y-auto rounded-lg border border-border">
-            {(matches ?? []).slice(0, 30).map((s) => (
-              <li key={s.id}>
-                <button
-                  type="button"
-                  className="flex min-h-11 w-full items-center gap-2 px-3 text-left hover:bg-surface-2"
-                  onClick={() =>
-                    void addSetlistItem(db, setlist.id, { kind: 'song', songId: s.id })
-                  }
-                >
-                  <Plus className="size-4 text-accent" aria-hidden />
-                  <span className="truncate">{s.title}</span>
-                  <span className="truncate text-sm text-muted">{s.artist}</span>
-                </button>
-              </li>
-            ))}
-            {matches?.length === 0 && (
-              <li className="px-3 py-2 text-sm text-muted">Nada encontrado.</li>
-            )}
-          </ul>
-        )}
-      </section>
+      {readOnly && (
+        <p className="mt-3 rounded-lg bg-surface-2 px-3 py-2 text-sm text-muted">
+          Repertório de um grupo: só o dono e os editores podem alterar. Você pode tocar ou
+          duplicar.
+        </p>
+      )}
+
+      {!readOnly && (
+        <section className="mt-5 rounded-xl border border-border bg-surface p-4">
+          <h2 className="mb-2 text-sm font-semibold text-muted">Adicionar</h2>
+          <div className="flex gap-2">
+            <Input
+              type="search"
+              placeholder="Buscar música na biblioteca"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+            <Button
+              onClick={() =>
+                void addSetlistItem(db, setlist.id, { kind: 'moment', label: 'Intervalo' })
+              }
+            >
+              + Momento
+            </Button>
+          </div>
+          {search.trim() && (
+            <ul className="mt-2 max-h-64 divide-y divide-border overflow-y-auto rounded-lg border border-border">
+              {(matches ?? []).slice(0, 30).map((s) => (
+                <li key={s.id}>
+                  <button
+                    type="button"
+                    className="flex min-h-11 w-full items-center gap-2 px-3 text-left hover:bg-surface-2"
+                    onClick={() =>
+                      void addSetlistItem(db, setlist.id, { kind: 'song', songId: s.id })
+                    }
+                  >
+                    <Plus className="size-4 text-accent" aria-hidden />
+                    <span className="truncate">{s.title}</span>
+                    <span className="truncate text-sm text-muted">{s.artist}</span>
+                  </button>
+                </li>
+              ))}
+              {matches?.length === 0 && (
+                <li className="px-3 py-2 text-sm text-muted">Nada encontrado.</li>
+              )}
+            </ul>
+          )}
+        </section>
+      )}
 
       <div className="mt-4">
         <Field label="Observações">
           <Textarea
             rows={2}
             defaultValue={setlist.notes}
+            readOnly={readOnly}
             key={`o${setlist.id}`}
             onBlur={(e) => void saveSetlist(db, { id: setlist.id, notes: e.target.value })}
           />
@@ -294,22 +333,24 @@ export default function Repertorio() {
           Duplicar
         </Button>
         <div className="flex-1" />
-        <Button
-          variant="danger"
-          onClick={async () => {
-            if (
-              !confirm(
-                `Excluir o repertório “${setlist.name}”? As músicas continuam na biblioteca.`,
+        {isMine && (
+          <Button
+            variant="danger"
+            onClick={async () => {
+              if (
+                !confirm(
+                  `Excluir o repertório “${setlist.name}”? As músicas continuam na biblioteca.`,
+                )
               )
-            )
-              return;
-            await deleteSetlist(db, setlist.id);
-            navigate('/repertorios');
-          }}
-        >
-          <Trash2 className="size-4" aria-hidden />
-          Excluir
-        </Button>
+                return;
+              await deleteSetlist(db, setlist.id);
+              navigate('/repertorios');
+            }}
+          >
+            <Trash2 className="size-4" aria-hidden />
+            Excluir
+          </Button>
+        )}
       </div>
     </Page>
   );
