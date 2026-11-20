@@ -87,6 +87,10 @@
     {
       "filename": "apps/desktop/src-tauri/Cargo.toml",
       "updater": "scripts/version-updaters/cargo.cjs"
+    },
+    {
+      "filename": "apps/android/package.json",
+      "type": "json"
     }
   ]
 }
