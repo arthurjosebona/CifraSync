@@ -1,6 +1,6 @@
 # TASKS: CifraSync — produto inicial (MVP multiplataforma)
 
-**Status:** Rascunho
+**Status:** Aprovado (2026-11-20)
 Baseado no [PLAN.md](PLAN.md) aprovado. **Git flow desde o início** ([versionamento](../../processo/versionamento.md#git-flow)).
 
 **Legenda**
@@ -589,5 +589,3 @@ Corrigir o que for encontrado.
 Implementação: uma task por vez. Marco `[x]` depois de verificar (compilação, build ou testes do pacote). Se aparecer algo fora do PLAN, paro e aviso antes de continuar.
 
 Testes funcionais e rollback não fazem parte deste fluxo — peça **TESTS.md** ou **ROLLBACK.md** se precisar.
-
-Responda **"aprovado"** para começar a implementação pela T1, ou peça ajustes.

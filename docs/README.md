@@ -28,7 +28,7 @@ Uma pasta numerada por feature, seguindo os templates de [`processo/sdd/template
 
 | Pasta | Feature | Etapa |
 |---|---|---|
-| [01-mvp](specs/01-mvp/SPEC.md) | Produto inicial (MVP multiplataforma) | SPEC e [PLAN](specs/01-mvp/PLAN.md) aprovados · [TASKS](specs/01-mvp/TASKS.md) em revisão |
+| [01-mvp](specs/01-mvp/SPEC.md) | Produto inicial (MVP multiplataforma) | SPEC, [PLAN](specs/01-mvp/PLAN.md) e [TASKS](specs/01-mvp/TASKS.md) aprovados · implementação |
 
 ## `prompts/`
 
