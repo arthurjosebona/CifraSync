@@ -18,7 +18,7 @@ Baseado no [PLAN.md](PLAN.md) aprovado. **Git flow desde o início** ([versionam
 
 **Branches:** `feature/fundacao-monorepo` (T2–T5) · `feature/ci` (T6) · `feature/adrs` (T8)
 
-### [ ] T1: Publicar o repositório e criar a `develop` [H]
+### [x] T1: Publicar o repositório e criar a `develop` [H]
 **Fazer:** o autor cria o repositório público vazio `CifraSync` no GitHub. Depois o Claude:
 - adiciona o remoto `origin` e faz o push da `main`, que tem só a documentação de planejamento;
 - cria a `develop` a partir da `main` e faz o push;
@@ -26,27 +26,27 @@ Baseado no [PLAN.md](PLAN.md) aprovado. **Git flow desde o início** ([versionam
 
 **Verificar:** `git ls-remote origin` lista `refs/heads/main` e `refs/heads/develop`.
 
-### [ ] T2: Esqueleto do monorepo
+### [x] T2: Esqueleto do monorepo
 **Fazer:** `package.json` raiz com `engines`/`packageManager`, `pnpm-workspace.yaml`, `turbo.json` (tarefas build, typecheck, lint, test), `tsconfig.base.json` strict, `.nvmrc`, `.editorconfig`. Pastas vazias com `package.json` para `packages/core`, `packages/shared`, `packages/sync`, `apps/web`.
 **Verificar:** `pnpm install && pnpm turbo run typecheck` termina sem erro.
 **Depende de:** T1
 
-### [ ] T3: Lint, formatação e testes
+### [x] T3: Lint, formatação e testes
 **Fazer:** ESLint (flat config, TS + React + hooks), Prettier, Vitest configurado por workspace. Scripts `lint`, `format`, `test` na raiz.
 **Verificar:** `pnpm lint && pnpm test` passam (com um teste placeholder no `core`).
 **Depende de:** T2
 
-### [ ] T4: Hooks de commit
+### [x] T4: Hooks de commit
 **Fazer:** Husky + commitlint (`@commitlint/config-conventional`, com os escopos de `versionamento.md`) no `commit-msg`, e lint-staged no `pre-commit`.
 **Verificar:** um commit com a mensagem "teste" é rejeitado, e `chore: teste` é aceito (o teste é desfeito em seguida).
 **Depende de:** T3
 
-### [ ] T5: Geração de versão
+### [x] T5: Geração de versão
 **Fazer:** `commit-and-tag-version` com `.versionrc` (seções do CHANGELOG em português e arquivos de versão extras: por enquanto só os `package.json`). Script `pnpm release`.
 **Verificar:** `pnpm release --dry-run` mostra a próxima versão e o CHANGELOG sem alterar arquivos.
 **Depende de:** T4
 
-### [ ] T6: Workflow de CI
+### [x] T6: Workflow de CI
 **Fazer:** `.github/workflows/ci.yml` (Node + pnpm com cache, `lint`, `typecheck`, `test`, `build`), disparado em push de `main`, `develop`, `feature/*`, `release/*`, `hotfix/*` e em PRs. Job de commitlint para o título de PR.
 **Verificar:** `actionlint` sem erros; primeira execução verde no GitHub após o push.
 **Depende de:** T3
@@ -62,7 +62,7 @@ Na `main`, só merge commit. Na `develop`, só squash.
 **Verificar:** `gh api repos/{owner}/{repo}/branches/main/protection` e `.../develop/protection` retornam a proteção ativa.
 **Depende de:** T6 (o check precisa ter rodado pelo menos uma vez)
 
-### [ ] T8: ADRs das decisões do PLAN
+### [x] T8: ADRs das decisões do PLAN
 **Fazer:** ADRs 0001 a 0008 em `docs/adr/`:
 - 0001 SPA única para todas as plataformas;
 - 0002 Tauri 2 no desktop;
@@ -79,7 +79,7 @@ Atualizar `docs/adr/README.md`.
 ### [ ] T9: Release v0.1.0
 **Fazer:** fluxo de release, que se repete em todas as fases:
 1. O Claude cria `release/0.1.0` a partir da `develop` atualizada.
-2. O Claude roda `pnpm release --skip.tag` (CHANGELOG + versões + commit `chore(release): 0.1.0`) e faz o push.
+2. O Claude roda `pnpm release --release-as 0.1.0 --skip.tag` (CHANGELOG + versões + commit `chore(release): v0.1.0`) e faz o push. Nas releases seguintes, sem `--release-as`: a versão sai dos commits.
 3. O Claude abre o PR `release/0.1.0` → `main`.
 4. **O autor** revisa e mergeia com merge commit.
 5. O Claude cria e envia a tag `v0.1.0` no commit de merge da `main`.

@@ -16,7 +16,7 @@
 | `chore` | manutenção geral | — |
 | `style` | formatação | — |
 
-**Escopos sugeridos:** `core`, `editor`, `acordes`, `repertorios`, `grupos`, `palco`, `sync`, `api`, `db`, `web`, `desktop`, `android`, `ci`, `docs`, `specs`, `prompts`.
+**Escopos sugeridos:** `core`, `editor`, `acordes`, `repertorios`, `grupos`, `palco`, `sync`, `api`, `db`, `web`, `desktop`, `android`, `ci`, `deps`, `docs`, `adr`, `specs`, `prompts`, `release`.
 
 **Exemplos**
 
