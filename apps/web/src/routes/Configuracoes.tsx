@@ -8,6 +8,7 @@ import {
 } from '@cifrasync/shared';
 import { useMemo, useState, type ReactNode } from 'react';
 
+import { AccountSection } from '../components/AccountSection';
 import { Page } from '../components/Page';
 import { SongView } from '../components/SongView';
 import { Button, Field, Select } from '../components/ui';
@@ -146,6 +147,7 @@ export default function Configuracoes() {
   return (
     <Page title="Ajustes">
       <div className="flex flex-col gap-4">
+        <AccountSection />
         <section className="rounded-xl border border-border bg-surface p-4">
           <h2 className="mb-3 text-sm font-semibold text-muted">Tema da interface</h2>
           <div className="inline-flex rounded-lg border border-border p-1" role="radiogroup">
