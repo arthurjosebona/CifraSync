@@ -30,7 +30,9 @@ export async function initPlatform(): Promise<Platform> {
   if (kind === 'desktop') {
     current = (await import('./desktop')).desktopPlatform;
   } else if (kind === 'android') {
-    current = (await import('./android')).androidPlatform;
+    const android = await import('./android');
+    android.setupAndroid();
+    current = android.androidPlatform;
   }
   return current;
 }

@@ -17,6 +17,14 @@
     "build:native": "vite build --mode native"
   },
   "dependencies": {
+    "@capacitor-community/keep-awake": "8.0.1",
+    "@capacitor/app": "8.1.2",
+    "@capacitor/core": "8.6.2",
+    "@capacitor/filesystem": "8.1.5",
+    "@capacitor/preferences": "8.0.1",
+    "@capacitor/screen-orientation": "8.0.2",
+    "@capacitor/share": "8.0.3",
+    "@capacitor/status-bar": "8.0.4",
     "@cifrasync/core": "workspace:*",
     "@cifrasync/shared": "workspace:*",
     "@cifrasync/sync": "workspace:*",

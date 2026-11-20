@@ -4,6 +4,7 @@ import { RouterProvider } from 'react-router';
 
 import { ensureIdentity } from '@cifrasync/sync';
 
+import { UpdateNotice } from './components/UpdateNotice';
 import { UpdatePrompt } from './components/UpdatePrompt';
 import { db } from './lib/data';
 import { startSync } from './lib/sync';
@@ -26,6 +27,7 @@ createRoot(document.getElementById('root')!).render(
     <ThemeProvider>
       <RouterProvider router={router} />
       <UpdatePrompt />
+      <UpdateNotice />
     </ThemeProvider>
   </StrictMode>,
 );

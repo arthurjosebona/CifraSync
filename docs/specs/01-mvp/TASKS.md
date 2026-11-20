@@ -495,7 +495,7 @@ Incluir no CI.
 
 **Branches:** `feature/android-capacitor` (T70) · `feature/android-release` (T71–T72) · `feature/ajustes-android` (correções da T73)
 
-### [ ] T70: Projeto Capacitor
+### [x] T70: Projeto Capacitor
 **Fazer:**
 - `apps/android` com Capacitor (`androidScheme: https`, `minSdk` do Android 7);
 - plugins de tela ligada, orientação, barra de status/imersivo, preferências (token), filesystem/share;
@@ -510,7 +510,7 @@ Incluir no CI.
 **Verificar:** `gh secret list` mostra os 4 secrets.
 **Depende de:** T70
 
-### [ ] T72: APK assinado na release e aviso de versão
+### [x] T72: APK assinado na release e aviso de versão
 **Fazer:**
 - job Android no `release-build.yml` (`assembleRelease` assinado, nome `cifrasync-X.Y.Z.apk`);
 - `versionName`/`versionCode` derivados da tag;
