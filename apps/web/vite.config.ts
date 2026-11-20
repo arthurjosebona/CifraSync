@@ -40,6 +40,10 @@ export default defineConfig({
     // pacotes do monorepo são consumidos pelo código-fonte (condição "source")
     conditions: ['source', 'module', 'browser', 'development|production'],
   },
+  server: {
+    // API local (pnpm dev:api) na porta 8787
+    proxy: { '/api': 'http://localhost:8787' },
+  },
   build: {
     target: 'es2022',
     sourcemap: true,
