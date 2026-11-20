@@ -6,6 +6,7 @@ import { ensureIdentity } from '@cifrasync/sync';
 
 import { UpdatePrompt } from './components/UpdatePrompt';
 import { db } from './lib/data';
+import { startSync } from './lib/sync';
 import { ThemeProvider } from './lib/theme';
 import { initPlatform } from './platform';
 import { router } from './router';
@@ -18,7 +19,7 @@ if (typeof navigator !== 'undefined' && navigator.storage?.persist) {
 
 void initPlatform();
 // ids do aparelho e do usuário local precisam existir antes das consultas reativas
-void ensureIdentity(db);
+void ensureIdentity(db).then(startSync);
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

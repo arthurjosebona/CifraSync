@@ -8,5 +8,13 @@
     "noEmit": true,
     "declaration": false
   },
-  "include": ["src", "e2e", "vite.config.ts", "playwright.config.ts"]
+  "include": [
+    "src",
+    "e2e",
+    "server",
+    "api",
+    "vite.config.ts",
+    "playwright.config.ts",
+    "drizzle.config.ts"
+  ]
 }

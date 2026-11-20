@@ -33,3 +33,5 @@ Thumbs.db
 packages/core/review/
 test-results/
 playwright-report/
+.data/
+.env.local

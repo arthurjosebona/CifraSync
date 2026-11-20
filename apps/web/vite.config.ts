@@ -40,6 +40,14 @@ export default defineConfig({
     // pacotes do monorepo são consumidos pelo código-fonte (condição "source")
     conditions: ['source', 'module', 'browser', 'development|production'],
   },
+  ssr: {
+    // testes do servidor (Vitest em Node) também usam o código-fonte dos pacotes
+    resolve: { conditions: ['source', 'module', 'node', 'development|production'] },
+  },
+  server: {
+    // API local (pnpm dev:api) na porta 8787
+    proxy: { '/api': 'http://localhost:8787' },
+  },
   build: {
     target: 'es2022',
     sourcemap: true,
@@ -47,5 +55,7 @@ export default defineConfig({
   test: {
     // os testes e2e (Playwright) ficam em e2e/ e não rodam no Vitest
     exclude: ['e2e/**', 'node_modules/**', 'dist/**'],
+    // testes do servidor criam banco (PGlite) e fazem hash de senha: mais tempo que o padrão
+    testTimeout: 30_000,
   },
 });
