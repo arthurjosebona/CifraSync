@@ -1,0 +1,32 @@
+# Dependências e builds
+node_modules/
+dist/
+build/
+.turbo/
+.vercel/
+coverage/
+
+# Ambiente e segredos
+.env
+.env.*
+!.env.example
+*.keystore
+*.jks
+*.key
+
+# Tauri / Rust
+target/
+
+# Android
+.gradle/
+local.properties
+*.apk
+*.aab
+
+# SO / editores
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.log
