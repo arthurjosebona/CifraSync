@@ -2,7 +2,18 @@
  * Leitura e escrita no banco local. Toda escrita grava o registro e enfileira a mutação
  * na MESMA transação — nunca fica dado salvo sem ir para a fila (PLAN, concorrência).
  */
-import type { Setlist, SetlistItem, Song, SyncColumns, UserSettings } from '@cifrasync/shared';
+import type {
+  Group,
+  GroupMember,
+  GroupRole,
+  GroupSetlist,
+  Profile,
+  Setlist,
+  SetlistItem,
+  Song,
+  SyncColumns,
+  UserSettings,
+} from '@cifrasync/shared';
 import Dexie from 'dexie';
 import { generateKeyBetween } from 'fractional-indexing';
 
@@ -399,4 +410,144 @@ export async function saveSettings(
 /** Quantas mutações aguardam envio (indicador de sync). */
 export async function pendingCount(db: CifraDB): Promise<number> {
   return db.outbox.count();
+}
+
+// ---------------------------------------------------------------------------
+// Grupos (bandas)
+// ---------------------------------------------------------------------------
+
+/** Cria o grupo e a participação do dono (papel owner). */
+export async function createGroup(db: CifraDB, name: string): Promise<Group> {
+  return db.transaction('rw', db.groups, db.groupMembers, db.outbox, db.meta, async () => {
+    const userId = await getCurrentUserId(db);
+    const group = await stamp(db, {
+      ...newSyncColumns(),
+      updatedByDevice: '',
+      ownerId: userId,
+      name: name.trim() || 'Minha banda',
+    } satisfies Group);
+    await db.groups.put(group);
+    await enqueue(db, 'groups', 'upsert', group as unknown as Row);
+    const member = await stamp(db, {
+      ...newSyncColumns(),
+      updatedByDevice: '',
+      groupId: group.id,
+      userId,
+      role: 'owner',
+      status: 'active',
+    } satisfies GroupMember);
+    await db.groupMembers.put(member);
+    await enqueue(db, 'groupMembers', 'upsert', member as unknown as Row);
+    return group;
+  });
+}
+
+export async function renameGroup(db: CifraDB, groupId: string, name: string): Promise<void> {
+  await db.transaction('rw', db.groups, db.outbox, db.meta, async () => {
+    const g = await db.groups.get(groupId);
+    if (!g || g.deleted) return;
+    const row = await stamp(db, { ...g, name: name.trim() || g.name });
+    await db.groups.put(row);
+    await enqueue(db, 'groups', 'upsert', row as unknown as Row);
+  });
+}
+
+/** Convida um usuário (fica pendente até ele aceitar). */
+export async function inviteMember(
+  db: CifraDB,
+  groupId: string,
+  profile: Profile,
+  role: GroupRole = 'member',
+): Promise<GroupMember> {
+  return db.transaction('rw', db.groupMembers, db.profiles, db.outbox, db.meta, async () => {
+    await db.profiles.put(profile);
+    const existing = await db.groupMembers
+      .where('[groupId+userId]')
+      .equals([groupId, profile.id])
+      .first();
+    const row = await stamp(db, {
+      ...(existing ?? { ...newSyncColumns(), updatedByDevice: '' }),
+      groupId,
+      userId: profile.id,
+      role,
+      status: existing && !existing.deleted ? existing.status : 'pending',
+      deleted: false,
+    } satisfies GroupMember);
+    await db.groupMembers.put(row);
+    await enqueue(db, 'groupMembers', 'upsert', row as unknown as Row);
+    return row;
+  });
+}
+
+async function updateMember(
+  db: CifraDB,
+  memberId: string,
+  patch: Partial<GroupMember>,
+  op: Mutation['op'] = 'upsert',
+) {
+  await db.transaction('rw', db.groupMembers, db.outbox, db.meta, async () => {
+    const m = await db.groupMembers.get(memberId);
+    if (!m) return;
+    const row = await stamp(db, { ...m, ...patch });
+    await db.groupMembers.put(row);
+    await enqueue(db, 'groupMembers', op, row as unknown as Row);
+  });
+}
+
+export const setMemberRole = (db: CifraDB, memberId: string, role: GroupRole) =>
+  updateMember(db, memberId, { role });
+export const removeMember = (db: CifraDB, memberId: string) =>
+  updateMember(db, memberId, { deleted: true }, 'delete');
+export const acceptInvite = (db: CifraDB, memberId: string) =>
+  updateMember(db, memberId, { status: 'active' });
+/** Recusar um convite ou sair do grupo. */
+export const leaveGroup = (db: CifraDB, memberId: string) =>
+  updateMember(db, memberId, { deleted: true }, 'delete');
+
+/** Compartilha um repertório meu com o grupo. */
+export async function shareSetlist(db: CifraDB, groupId: string, setlistId: string): Promise<void> {
+  await db.transaction('rw', db.groupSetlists, db.outbox, db.meta, async () => {
+    const userId = await getCurrentUserId(db);
+    const existing = await db.groupSetlists
+      .where('groupId')
+      .equals(groupId)
+      .filter((g) => g.setlistId === setlistId)
+      .first();
+    const row = await stamp(db, {
+      ...(existing ?? { ...newSyncColumns(), updatedByDevice: '' }),
+      groupId,
+      setlistId,
+      addedBy: userId,
+      deleted: false,
+    } satisfies GroupSetlist);
+    await db.groupSetlists.put(row);
+    await enqueue(db, 'groupSetlists', 'upsert', row as unknown as Row);
+  });
+}
+
+export async function unshareSetlist(db: CifraDB, groupSetlistId: string): Promise<void> {
+  await db.transaction('rw', db.groupSetlists, db.outbox, db.meta, async () => {
+    const gs = await db.groupSetlists.get(groupSetlistId);
+    if (!gs || gs.deleted) return;
+    const row = await stamp(db, { ...gs, deleted: true });
+    await db.groupSetlists.put(row);
+    await enqueue(db, 'groupSetlists', 'delete', row as unknown as Row);
+  });
+}
+
+/** Copia uma música recebida de um grupo para a minha biblioteca (cópia editável). */
+export async function copySongToLibrary(db: CifraDB, songId: string): Promise<Song | undefined> {
+  const s = await getSong(db, songId);
+  if (!s) return undefined;
+  const {
+    id: _id,
+    ownerId: _o,
+    version: _v,
+    seq: _s,
+    deleted: _d,
+    updatedAt: _u,
+    updatedByDevice: _b,
+    ...fields
+  } = s;
+  return saveSong(db, fields);
 }

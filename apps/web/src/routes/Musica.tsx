@@ -1,6 +1,6 @@
 import type { InstrumentId } from '@cifrasync/core';
-import { addSetlistItem, deleteSong, saveSong } from '@cifrasync/sync';
-import { Minus, Pencil, Play, Plus, RotateCcw, Save, Trash2 } from 'lucide-react';
+import { addSetlistItem, copySongToLibrary, deleteSong, saveSong } from '@cifrasync/sync';
+import { Copy, Minus, Pencil, Play, Plus, RotateCcw, Save, Trash2 } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
 
@@ -9,6 +9,7 @@ import { Empty, Page } from '../components/Page';
 import { SongView } from '../components/SongView';
 import { Button, IconButton, Select } from '../components/ui';
 import { db, useSetlists, useSettings, useSong } from '../lib/data';
+import { useMyId } from '../lib/groups';
 import {
   chordShapes,
   keyLabel,
@@ -24,6 +25,7 @@ export default function Musica() {
   const song = useSong(id);
   const setlists = useSetlists();
   const { settings } = useSettings();
+  const myId = useMyId();
 
   const [semitones, setSemitones] = useState(0);
   const [spelling, setSpelling] = useState<SpellingChoice>('auto');
@@ -65,6 +67,7 @@ export default function Musica() {
       </Page>
     );
 
+  const isMine = !myId || song.ownerId === myId;
   const shift = (n: number) => setSemitones((s) => ((((s + n + 6) % 12) + 12) % 12) - 6);
   const dirty = semitones !== song.transpose;
 
@@ -80,9 +83,22 @@ export default function Musica() {
       }
       actions={
         <>
-          <IconButton label="Editar" onClick={() => navigate(`/musicas/${song.id}/editar`)}>
-            <Pencil className="size-5" />
-          </IconButton>
+          {isMine ? (
+            <IconButton label="Editar" onClick={() => navigate(`/musicas/${song.id}/editar`)}>
+              <Pencil className="size-5" />
+            </IconButton>
+          ) : (
+            <Button
+              title="Música de outro membro do grupo: copie para editar a sua versão"
+              onClick={async () => {
+                const copy = await copySongToLibrary(db, song.id);
+                if (copy) navigate(`/musicas/${copy.id}`);
+              }}
+            >
+              <Copy className="size-4" aria-hidden />
+              Copiar para minha biblioteca
+            </Button>
+          )}
           <Button variant="primary" onClick={() => navigate(`/palco/musica/${song.id}`)}>
             <Play className="size-4" aria-hidden />
             Tocar
@@ -135,7 +151,7 @@ export default function Musica() {
         <IconButton label="Voltar ao tom original" onClick={() => setSemitones(0)}>
           <RotateCcw className="size-4" />
         </IconButton>
-        {dirty && (
+        {dirty && isMine && (
           <Button onClick={() => void saveSong(db, { id: song.id, transpose: semitones })}>
             <Save className="size-4" aria-hidden />
             Salvar tom
@@ -171,14 +187,17 @@ export default function Musica() {
           shapes={shapes}
           instrument={instrument}
           lefty={settings.stage.lefty}
-          onCycle={(name, next) =>
-            void saveSong(db, {
-              id: song.id,
-              chordPrefs: {
-                ...song.chordPrefs,
-                [instrument]: { ...(song.chordPrefs[instrument] ?? {}), [name]: next },
-              },
-            })
+          onCycle={
+            isMine
+              ? (name, next) =>
+                  void saveSong(db, {
+                    id: song.id,
+                    chordPrefs: {
+                      ...song.chordPrefs,
+                      [instrument]: { ...(song.chordPrefs[instrument] ?? {}), [name]: next },
+                    },
+                  })
+              : undefined
           }
         />
       </div>
@@ -218,17 +237,19 @@ export default function Musica() {
         </Select>
         {added && <span className="text-sm text-muted">Adicionada a “{added}”.</span>}
         <div className="flex-1" />
-        <Button
-          variant="danger"
-          onClick={async () => {
-            if (!confirm(`Excluir “${song.title}”? Ela sai também dos repertórios.`)) return;
-            await deleteSong(db, song.id);
-            navigate('/');
-          }}
-        >
-          <Trash2 className="size-4" aria-hidden />
-          Excluir
-        </Button>
+        {isMine && (
+          <Button
+            variant="danger"
+            onClick={async () => {
+              if (!confirm(`Excluir “${song.title}”? Ela sai também dos repertórios.`)) return;
+              await deleteSong(db, song.id);
+              navigate('/');
+            }}
+          >
+            <Trash2 className="size-4" aria-hidden />
+            Excluir
+          </Button>
+        )}
       </div>
     </Page>
   );

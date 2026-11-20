@@ -23,6 +23,7 @@ export const router = createBrowserRouter([
       { path: 'repertorios', element: page(() => import('./routes/Repertorios')) },
       { path: 'repertorios/:id', element: page(() => import('./routes/Repertorio')) },
       { path: 'grupos', element: page(() => import('./routes/Grupos')) },
+      { path: 'grupos/:id', element: page(() => import('./routes/Grupo')) },
       { path: 'dicionario', element: page(() => import('./routes/Dicionario')) },
       { path: 'configuracoes', element: page(() => import('./routes/Configuracoes')) },
       { path: 'entrar', element: page(() => import('./routes/Login')) },
