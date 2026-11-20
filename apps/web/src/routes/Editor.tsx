@@ -165,19 +165,19 @@ export default function Editor() {
             <Input value={form.artist} onChange={(e) => set('artist', e.target.value)} />
           </Field>
         </div>
-        <Field label="Tom">
-          <div className="flex gap-1">
+        <div className="flex items-end gap-1">
+          <Field label="Tom">
             <Input
               value={form.key}
               onChange={(e) => set('key', e.target.value)}
               placeholder="G, F#m…"
               className="font-mono"
             />
-            <IconButton label="Detectar tom pelos acordes" onClick={suggestKey}>
-              <Wand2 className="size-4" />
-            </IconButton>
-          </div>
-        </Field>
+          </Field>
+          <IconButton label="Detectar tom pelos acordes" onClick={suggestKey}>
+            <Wand2 className="size-4" />
+          </IconButton>
+        </div>
         <Field label="Capotraste">
           <Input
             type="number"
