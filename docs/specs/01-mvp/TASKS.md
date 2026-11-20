@@ -246,7 +246,7 @@ Atualizar `docs/adr/README.md`.
 **Verificar:** `pnpm --filter @cifrasync/web build`.
 **Depende de:** T23
 
-### [ ] T36: Motor de paginação
+### [x] T36: Motor de paginação
 **Fazer:** medição de unidades indivisíveis, distribuição em páginas, colunas 1/2/auto, recálculo com `ResizeObserver`, memoização por música/tom/capo/configuração.
 **Verificar:** `pnpm --filter @cifrasync/web build` e testes unitários da distribuição.
 **Depende de:** T28
