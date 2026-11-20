@@ -7,7 +7,7 @@
  *   aparelho vira uma "cópia de conflito". Nos demais casos vale a última escrita.
  */
 import { LIMITS } from '@cifrasync/shared';
-import { and, count, eq } from 'drizzle-orm';
+import { and, count, eq, lt } from 'drizzle-orm';
 import { z } from 'zod';
 
 import type { Db } from '../db/client.js';
@@ -144,7 +144,14 @@ async function applyOne(
   return { mid: m.mid, status: 'ok', row: row! };
 }
 
+/** Remove registros de idempotência com mais de 7 dias (de vez em quando, sem custo fixo). */
+async function pruneAppliedMutations(db: Db) {
+  const limit = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+  await db.delete(appliedMutations).where(lt(appliedMutations.createdAt, limit));
+}
+
 export async function push(db: Db, userId: string, body: PushBody): Promise<MutationResult[]> {
+  if (Math.random() < 0.02) await pruneAppliedMutations(db).catch(() => undefined);
   return db.transaction(async (tx) => {
     const results: MutationResult[] = [];
     for (const m of body.mutations) {

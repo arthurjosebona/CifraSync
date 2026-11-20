@@ -8,7 +8,9 @@ import {
 } from '@cifrasync/shared';
 import { useMemo, useState, type ReactNode } from 'react';
 
+import { AboutSection } from '../components/AboutSection';
 import { AccountSection } from '../components/AccountSection';
+import { BackupSection } from '../components/BackupSection';
 import { Page } from '../components/Page';
 import { SongView } from '../components/SongView';
 import { Button, Field, Select } from '../components/ui';
@@ -446,6 +448,9 @@ export default function Configuracoes() {
             Restaurar padrões do palco
           </Button>
         </div>
+
+        <BackupSection />
+        <AboutSection />
       </div>
     </Page>
   );

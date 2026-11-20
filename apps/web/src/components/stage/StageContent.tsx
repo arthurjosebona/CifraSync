@@ -251,7 +251,8 @@ export const StageContent = forwardRef<StageContentApi, StageContentProps>(funct
     lastTap.current = now;
     const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
     const rel = (e.clientX - rect.left) / rect.width;
-    let zone: TapZone = rel < 1 / 3 ? 'left' : rel > 2 / 3 ? 'right' : 'center';
+    // metades esquerda/direita navegam (SPEC); só a faixa central estreita abre os controles
+    let zone: TapZone = rel < 0.4 ? 'left' : rel > 0.6 ? 'right' : 'center';
     if (stage.tapZonesInverted && zone !== 'center') zone = zone === 'left' ? 'right' : 'left';
     onTap(zone);
   };

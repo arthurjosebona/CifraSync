@@ -269,7 +269,8 @@ export default function Palco() {
           if (mode !== 'paged') setPlaying((p) => !p);
           break;
         case 'Escape':
-          exit();
+          if (drawer) setDrawer(false);
+          else exit();
           break;
       }
     };
@@ -563,13 +564,18 @@ export default function Palco() {
 
       {/* gaveta do repertório */}
       {drawer && (
-        <div
-          className="absolute inset-0 z-30 flex justify-end bg-black/50"
-          onClick={() => setDrawer(false)}
-        >
+        <div className="absolute inset-0 z-30 flex justify-end">
+          <button
+            type="button"
+            aria-label="Fechar repertório"
+            className="absolute inset-0 bg-black/50"
+            onClick={() => setDrawer(false)}
+          />
           <aside
-            className="flex h-full w-full max-w-sm flex-col bg-neutral-900 text-white"
-            onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Repertório"
+            className="relative flex h-full w-full max-w-sm flex-col bg-neutral-900 text-white"
           >
             <div className="flex items-center justify-between px-4 py-3">
               <h2 className="font-semibold">{setlist?.name}</h2>

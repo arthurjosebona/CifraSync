@@ -6,6 +6,7 @@ import { LIMITS } from '@cifrasync/shared';
 import { and, eq, inArray, like, ne } from 'drizzle-orm';
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
+import { bodyLimit } from 'hono/body-limit';
 import { secureHeaders } from 'hono/secure-headers';
 import { z } from 'zod';
 
@@ -63,7 +64,8 @@ export function createApp({ db, auth, webOrigins = [] }: AppDeps) {
     await next();
   });
 
-  app.post('/sync/push', async (c) => {
+  // lote de até 200 mutações: 4 MB cobre letras longas com folga
+  app.post('/sync/push', bodyLimit({ maxSize: 4 * 1024 * 1024 }), async (c) => {
     const body = PushBody.safeParse(await c.req.json().catch(() => null));
     if (!body.success) return c.json({ error: 'Formato inválido' }, 400);
     const results = await push(db, c.get('userId'), body.data);

@@ -1,10 +1,12 @@
-import { Plus, Search } from 'lucide-react';
+import { FileUp, Plus, Search } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 
 import { Empty, Page } from '../components/Page';
 import { Button, Input, Select } from '../components/ui';
 import { useSongs } from '../lib/data';
+import { importSongFile } from '../lib/transfer';
+import { platform } from '../platform';
 
 type Order = 'title' | 'artist' | 'recent';
 
@@ -49,10 +51,24 @@ export default function Biblioteca() {
     <Page
       title="Músicas"
       actions={
-        <Button variant="primary" onClick={() => navigate('/musicas/nova')}>
-          <Plus className="size-4" aria-hidden />
-          Nova música
-        </Button>
+        <>
+          <Button
+            title="Importar arquivo .txt (cifra) ou .cho (ChordPro)"
+            onClick={async () => {
+              const file = await platform().openFile(['.txt', '.cho', '.chordpro', '.pro']);
+              if (!file) return;
+              const song = await importSongFile(file);
+              navigate(`/musicas/${song.id}`);
+            }}
+          >
+            <FileUp className="size-4" aria-hidden />
+            Importar
+          </Button>
+          <Button variant="primary" onClick={() => navigate('/musicas/nova')}>
+            <Plus className="size-4" aria-hidden />
+            Nova música
+          </Button>
+        </>
       }
     >
       <div className="mb-4 flex flex-col gap-2">

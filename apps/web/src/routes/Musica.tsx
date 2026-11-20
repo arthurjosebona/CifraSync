@@ -1,6 +1,6 @@
 import type { InstrumentId } from '@cifrasync/core';
 import { addSetlistItem, copySongToLibrary, deleteSong, saveSong } from '@cifrasync/sync';
-import { Copy, Minus, Pencil, Play, Plus, RotateCcw, Save, Trash2 } from 'lucide-react';
+import { Copy, Download, Minus, Pencil, Play, Plus, RotateCcw, Save, Trash2 } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
 
@@ -10,6 +10,7 @@ import { SongView } from '../components/SongView';
 import { Button, IconButton, Select } from '../components/ui';
 import { db, useSetlists, useSettings, useSong } from '../lib/data';
 import { useMyId } from '../lib/groups';
+import { exportSongChordPro, exportSongText } from '../lib/transfer';
 import {
   chordShapes,
   keyLabel,
@@ -236,6 +237,14 @@ export default function Musica() {
           ))}
         </Select>
         {added && <span className="text-sm text-muted">Adicionada a “{added}”.</span>}
+        <Button onClick={() => void exportSongText(song)} title="Baixar a cifra em texto">
+          <Download className="size-4" aria-hidden />
+          .txt
+        </Button>
+        <Button onClick={() => void exportSongChordPro(song)} title="Baixar em ChordPro">
+          <Download className="size-4" aria-hidden />
+          .cho
+        </Button>
         <div className="flex-1" />
         {isMine && (
           <Button
