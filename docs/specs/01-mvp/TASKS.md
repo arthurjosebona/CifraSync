@@ -92,17 +92,17 @@ Atualizar `docs/adr/README.md`.
 
 **Branches:** `feature/core-acordes` (T10–T12) · `feature/core-cifra` (T13–T17, T20) · `feature/core-posicoes` (T18, T19, T21)
 
-### [ ] T10: Modelo de notas e intervalos
+### [x] T10: Modelo de notas e intervalos
 **Fazer:** tipos de nota (12 classes de altura, grafias com ♯/♭), conversões, cálculo de intervalo e tabela de tons que usam bemóis.
 **Verificar:** `pnpm --filter @cifrasync/core test`.
 **Depende de:** T3
 
-### [ ] T11: Parser de acordes
+### [x] T11: Parser de acordes
 **Fazer:** `parseChord` com a notação BR e a internacional (qualidades, extensões, alterações com e sem parênteses, baixo com barra) e `formatChord` nos estilos `br`/`intl`. Testes com ≥ 80 grafias.
 **Verificar:** `pnpm --filter @cifrasync/core test`.
 **Depende de:** T10
 
-### [ ] T12: Transposição de acordes
+### [x] T12: Transposição de acordes
 **Fazer:** `transposeChord` com grafia pelo tom de destino e override manual de ♯/♭; transpõe fundamental e baixo.
 **Verificar:** `pnpm --filter @cifrasync/core test`.
 **Depende de:** T11
