@@ -337,12 +337,12 @@ Incluir no CI.
 **Verificar:** o deploy de produção da SPA abre em `*.vercel.app`.
 **Depende de:** T34
 
-### [ ] T47: Schema do servidor e migrations
+### [x] T47: Schema do servidor e migrations
 **Fazer:** schema Drizzle (tabelas do domínio, colunas de sync, sequência global e trigger de `seq`, índices, `applied_mutations`), migrations SQL versionadas, seed de desenvolvimento com usuários e dados de teste.
 **Verificar:** `pnpm --filter @cifrasync/web db:generate` gera o SQL sem diferença pendente; `tsc` sem erro.
 **Depende de:** T24
 
-### [ ] T48: API base e autenticação
+### [x] T48: API base e autenticação
 **Fazer:**
 - entrada `api/[[...route]].ts` com app Hono;
 - Better Auth (e-mail/senha, plugins `username` e `bearer`, sessão de 60 dias);
@@ -352,12 +352,12 @@ Incluir no CI.
 **Verificar:** `pnpm --filter @cifrasync/web build` (inclui as funções).
 **Depende de:** T46, T47
 
-### [ ] T49: Telas de cadastro e login
+### [x] T49: Telas de cadastro e login
 **Fazer:** cadastro (e-mail, senha, nome de usuário único com checagem), login, logout, sessão no cliente (cookie na web, token bearer via `Platform`), fluxo de sessão expirada sem bloquear o uso offline.
 **Verificar:** `pnpm --filter @cifrasync/web build`.
 **Depende de:** T48
 
-### [ ] T50: Endpoint de push
+### [x] T50: Endpoint de push
 **Fazer:** `sync/push`:
 - validação Zod e transação única;
 - autorização por tabela;
@@ -368,12 +368,12 @@ Incluir no CI.
 **Verificar:** `pnpm --filter @cifrasync/web build` e testes de integração contra Postgres local compilam.
 **Depende de:** T48
 
-### [ ] T51: Endpoint de pull
+### [x] T51: Endpoint de pull
 **Fazer:** `sync/pull` com escopo próprio (dono + configurações) e paginação por `seq`, retornando o novo cursor (os escopos de grupo vêm na T57).
 **Verificar:** `pnpm --filter @cifrasync/web build`.
 **Depende de:** T48
 
-### [ ] T52: Motor de sync no cliente
+### [x] T52: Motor de sync no cliente
 **Fazer:**
 - ciclo push → pull com lock entre abas;
 - gatilhos: abertura, login, `online`, debounce de 2 s após editar, 60 s em primeiro plano e botão manual;
@@ -383,12 +383,12 @@ Incluir no CI.
 **Verificar:** `pnpm --filter @cifrasync/sync test`.
 **Depende de:** T26, T50, T51
 
-### [ ] T53: Indicador de sync e primeiro login
+### [x] T53: Indicador de sync e primeiro login
 **Fazer:** indicador na barra (sincronizado, sincronizando, pendentes, erro) e download inicial completo ao logar num dispositivo novo, com progresso.
 **Verificar:** `pnpm --filter @cifrasync/web build`.
 **Depende de:** T49, T52
 
-### [ ] T54: Testes de integração do sync
+### [x] T54: Testes de integração do sync
 **Fazer:** Postgres de serviço no CI e testes simulando 2 dispositivos (edição offline, conflito de letra gera cópia, exclusão propaga, reenvio idempotente).
 **Verificar:** `pnpm test` compila e roda no CI.
 **Depende de:** T52

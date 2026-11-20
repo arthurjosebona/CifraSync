@@ -4,6 +4,8 @@
  *   - host *.neon.tech → driver serverless da Neon (produção na Vercel)
  *   - outro Postgres → node-postgres
  */
+import { mkdirSync } from 'node:fs';
+import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import type { PgDatabase, PgQueryResultHKT } from 'drizzle-orm/pg-core';
@@ -26,6 +28,7 @@ export async function createDb(url = process.env.DATABASE_URL): Promise<DbHandle
     const { PGlite } = await import('@electric-sql/pglite');
     const { drizzle } = await import('drizzle-orm/pglite');
     const target = !url || url === 'pglite:memory' ? undefined : url.slice('pglite:'.length);
+    if (target) mkdirSync(dirname(target), { recursive: true });
     const client = new PGlite(target);
     const db = drizzle(client, { schema }) as unknown as Db;
     return { db, kind: 'pglite', close: () => client.close() };
