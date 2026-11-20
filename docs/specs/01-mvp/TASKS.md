@@ -550,7 +550,7 @@ O Claude corrige.
 **Verificar:** `pnpm build`.
 **Depende de:** T49
 
-### [ ] T77: Acessibilidade e mensagens
+### [x] T77: Acessibilidade e mensagens
 **Fazer:** contraste AA nos temas e presets, foco visível, alvos ≥ 44 px, rótulos ARIA, mensagens de erro em português.
 **Verificar:** `pnpm build` e `pnpm lint` (regras jsx-a11y).
 **Depende de:** T42, T60
