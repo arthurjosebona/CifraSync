@@ -241,7 +241,7 @@ Atualizar `docs/adr/README.md`.
 
 **Branches:** `feature/palco-paginacao` (T35–T38) · `feature/palco-rolagem` (T39–T40) · `feature/palco-acordes-config` (T41–T42) · `feature/palco-e2e` (T43) · `feature/ajustes-palco` (correções da T44)
 
-### [ ] T35: Camada de plataforma (web)
+### [x] T35: Camada de plataforma (web)
 **Fazer:** interface `Platform` e implementação web (Wake Lock, Fullscreen, armazenamento do token, salvar/abrir arquivo, verificar atualização), com detecção da plataforma em tempo de execução.
 **Verificar:** `pnpm --filter @cifrasync/web build`.
 **Depende de:** T23

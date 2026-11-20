@@ -4,6 +4,7 @@ import { RouterProvider } from 'react-router';
 
 import { UpdatePrompt } from './components/UpdatePrompt';
 import { ThemeProvider } from './lib/theme';
+import { initPlatform } from './platform';
 import { router } from './router';
 import './styles.css';
 
@@ -11,6 +12,8 @@ import './styles.css';
 if (typeof navigator !== 'undefined' && navigator.storage?.persist) {
   void navigator.storage.persist().catch(() => undefined);
 }
+
+void initPlatform();
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
