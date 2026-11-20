@@ -16,3 +16,4 @@ Registro dos pedidos feitos à IA, em ordem, para manter a rastreabilidade de co
 | [0001](0001-levantamento-e-contexto.md) | 2026-11-20 | IDEA / contexto | 01-mvp | Levantamento do funcionamento desejado e das features |
 | [0002](0002-repositorio-e-spec-inicial.md) | 2026-11-20 | SPEC | 01-mvp | Criação do repositório, estrutura de docs e SPEC inicial |
 | [0003](0003-aprovacao-spec-e-plan.md) | 2026-11-20 | PLAN | 01-mvp | Aprovação da SPEC e geração do PLAN |
+| [0004](0004-aprovacao-plan-git-flow-e-tasks.md) | 2026-11-20 | TASKS | 01-mvp | Aprovação do PLAN, inclusão do git flow e geração do TASKS |

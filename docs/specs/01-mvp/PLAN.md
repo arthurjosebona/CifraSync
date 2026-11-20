@@ -1,6 +1,6 @@
 # PLAN: CifraSync — produto inicial (MVP multiplataforma)
 
-**Status:** Rascunho
+**Status:** Aprovado (2026-11-20)
 **Data:** 2026-11-20
 **SPEC:** [SPEC.md](SPEC.md) (aprovada)
 
@@ -69,7 +69,7 @@ flowchart TB
 | Android | Capacitor | APK a partir da mesma SPA, plugins maduros |
 | Testes | Vitest (unidade/integração), Playwright (e2e web) | — |
 | Qualidade | ESLint, Prettier, typecheck, commitlint + Husky | — |
-| Releases | release-please + tauri-action + Gradle no Actions | Versão e CHANGELOG automáticos |
+| Releases | commit-and-tag-version + tauri-action + Gradle no Actions | Versão e CHANGELOG a partir dos commits, compatível com git flow |
 
 ## Componentes afetados
 
@@ -84,7 +84,7 @@ Todos novos. Estrutura do monorepo:
 | `apps/web/api` + `apps/web/server` | API Hono: autenticação, `sync/push`, `sync/pull`, busca de usuários, convites, exportação, exclusão de conta. Schema Drizzle e migrations SQL versionadas. |
 | `apps/desktop` | Projeto Tauri 2 que carrega o build da SPA; comandos nativos de tela ligada, armazenamento seguro do token e updater. |
 | `apps/android` | Projeto Capacitor que carrega o build da SPA; plugins de tela ligada, orientação, barra de status, preferências e compartilhamento de arquivos. |
-| `.github/workflows` | CI, migrations, release-please e build de release. |
+| `.github/workflows` | CI, migrations e build de release. |
 | `docs/adr` | ADRs das decisões abaixo, criados quando este PLAN for aprovado. |
 
 **Camadas tocadas:** UI ↔ banco local ↔ motor de sync ↔ API ↔ Postgres.
@@ -190,7 +190,7 @@ Cada fase termina num estado utilizável, com uma release semântica. O TASKS.md
 
 | Fase | Entrega | Release |
 |---|---|---|
-| 0 | Monorepo, lint/typecheck/test, commitlint/Husky, CI, release-please, ADRs | `v0.1.0` |
+| 0 | Monorepo, lint/typecheck/test, commitlint/Husky, CI, geração de versão, ADRs | `v0.1.0` |
 | 1 | `packages/core` completo e testado (cifra, acordes, transposição, capo, posições) | `v0.2.0` |
 | 2 | SPA local sem servidor: biblioteca, editor, dicionário, repertórios, PWA offline | `v0.3.0` |
 | 3 | Modo palco: paginação, rolagem automática/híbrida, coluna de acordes, personalização | `v0.4.0` |
@@ -198,7 +198,7 @@ Cada fase termina num estado utilizável, com uma release semântica. O TASKS.md
 | 5 | Grupos: busca por usuário, convites, papéis, compartilhamento, revogação | `v0.6.0` |
 | 6 | Desktop Tauri (Windows/Linux) com updater e build na release | `v0.7.0` |
 | 7 | Android Capacitor com APK assinado na release | `v0.8.0` |
-| 8 | Polimento (export/import, configurações por dispositivo, acessibilidade, revisão de segurança) → critérios da SPEC verificados | `v1.0.0` |
+| 8 | Polimento (export/import, configurações por dispositivo, acessibilidade, revisão de segurança) → critérios da SPEC verificados → criação da `develop` e proteção das branches (início do git flow) | `v1.0.0` |
 
 ## Divisão de trabalho: Claude × autor
 
@@ -207,7 +207,7 @@ Cada fase termina num estado utilizável, com uma release semântica. O TASKS.md
 - Todo o código: pacotes, SPA, API, schema e migrations, configuração do Tauri e do Capacitor.
 - Testes unitários, de integração e e2e, com cifras de teste autorais ou de domínio público.
 - Workflows do Actions, configuração da Vercel, `.env.example` e scripts de versão (versão única sincronizada entre web, Tauri e Gradle).
-- Documentação: ADRs, README, CHANGELOG (via release-please), registro dos prompts.
+- Documentação: ADRs, README, CHANGELOG (via commit-and-tag-version), registro dos prompts.
 - Commits semânticos e descrições de PR.
 - Comandos prontos para cada passo humano abaixo.
 
@@ -229,16 +229,30 @@ Cada fase termina num estado utilizável, com uma release semântica. O TASKS.md
 ## Versionamento e CI/CD
 
 - **Commits:** Conventional Commits em português, validados no hook `commit-msg` e no título do PR ([versionamento](../../processo/versionamento.md)).
-- **Branches:** `main` protegida a partir da Fase 0, branches `feat/` e `fix/`, merge squash.
+- **Fluxo de branches em dois momentos:**
+
+  | Momento | Fluxo |
+  |---|---|
+  | **Durante este MVP (até `v1.0.0`)** | Trabalho direto na `main`. Cada fase termina com uma release gerada na própria `main`. |
+  | **Depois da `v1.0.0` (toda feature seguinte)** | **Git flow padrão:** criar a `develop` a partir da `main`, proteger `main` e `develop`, e seguir o ciclo descrito abaixo. |
+
+  Ciclo do git flow:
+  - `feature/NN-nome` sai da `develop` e volta para ela por PR.
+  - `release/X.Y.Z` sai da `develop`, recebe o bump de versão e o CHANGELOG, é mergeada na `main` com a tag e volta para a `develop`.
+  - `hotfix/X.Y.Z` sai da `main` e volta para a `main` e para a `develop`.
+
+  O detalhe está em [versionamento](../../processo/versionamento.md#git-flow-após-o-mvp).
+- **Geração de versão:** **`commit-and-tag-version`** calcula a próxima versão pelos Conventional Commits, atualiza o CHANGELOG e as versões (web, Tauri, Gradle), cria o commit `chore(release): X.Y.Z` e a tag `vX.Y.Z`.
+  - No MVP, roda na `main`. No git flow, roda dentro da branch `release/*` ou `hotfix/*`.
+  - Substitui o release-please, que exige uma branch única de release e conflita com o git flow.
 - **Workflows:**
 
   | Workflow | Gatilho | Faz |
   |---|---|---|
-  | `ci` | Push/PR | Lint, typecheck, testes (com Postgres de serviço), build da SPA |
-  | `migrate` | Merge em `main` com mudança em migrations | Aplica migrations em produção |
-  | Vercel (integração Git) | Push/PR | Preview por PR, produção no merge |
-  | `release-please` | Merge em `main` | Abre o PR de release com CHANGELOG e, ao mergear, cria a tag `vX.Y.Z` e a Release |
-  | `release-build` | Release publicada | Matriz Windows + Linux (Tauri) e Android (Gradle), anexa os artefatos e o manifesto do updater |
+  | `ci` | Push em `main`, `develop`, `feature/*`, `release/*`, `hotfix/*` e PRs | Lint, typecheck, testes (com Postgres de serviço), build da SPA, commitlint |
+  | `migrate` | Push em `main` com mudança em migrations | Aplica migrations em produção |
+  | Vercel (integração Git) | Push/PR | Produção a partir da `main`; previews de qualquer outra branch e PR (inclusive a `develop`, que serve de homologação) |
+  | `release-build` | Push de tag `v*` | Cria a GitHub Release com as notas do CHANGELOG e anexa os artefatos da matriz Windows + Linux (Tauri) e Android (Gradle) e o manifesto do updater |
 
 - **Autoria com IA:** trailer `Co-Authored-By` nos commits feitos com a IA, seção no README e prompts em `docs/prompts/`.
 
@@ -268,6 +282,3 @@ Cada fase termina num estado utilizável, com uma release semântica. O TASKS.md
 | PowerSync ou ElectricSQL para sync | Um serviço a mais para manter dentro de planos grátis; o protocolo próprio é pequeno e cobre os casos da SPEC |
 | SQLite nativo em cada plataforma | Três implementações de armazenamento; IndexedDB é único e suficiente para o volume de texto |
 | WebSocket para tempo real dos grupos | Funções serverless não mantêm conexão; o polling atende o critério de 60 s |
-
----
-Responda **"aprovado"** para gerar o TASKS.md, ou peça ajustes.
