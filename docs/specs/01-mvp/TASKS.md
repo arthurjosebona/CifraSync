@@ -186,7 +186,7 @@ Atualizar `docs/adr/README.md`.
 **Verificar:** `pnpm --filter @cifrasync/web build`.
 **Depende de:** T19, T23
 
-### [ ] T26: Banco local
+### [x] T26: Banco local
 **Fazer:** `packages/sync` com o schema Dexie (tabelas espelho, fila, meta, índice de busca), repositórios de leitura/escrita que gravam o registro e a mutação na mesma transação, `deviceId` e UUID v7.
 **Verificar:** `pnpm --filter @cifrasync/sync test` (fake-indexeddb).
 **Depende de:** T24
