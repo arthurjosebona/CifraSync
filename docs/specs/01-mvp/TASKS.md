@@ -575,7 +575,7 @@ Corrigir o que for encontrado.
 **Verificar:** todos os critérios marcados no checklist; `pnpm build` verde.
 **Depende de:** T78
 
-### [ ] T80: Documentação final
+### [x] T80: Documentação final
 **Fazer:** README com instalação por plataforma (avisos do SmartScreen e de fontes externas, Obtainium), como rodar localmente, arquitetura resumida e links para os ADRs. `docs/README.md` e as etapas da `specs/01-mvp` atualizados.
 **Verificar:** links verificados.
 **Depende de:** T79

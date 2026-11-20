@@ -22,3 +22,4 @@ Registro dos pedidos feitos à IA, em ordem, para manter a rastreabilidade de co
 | [0007](0007-execucao-autonoma-fases-0-e-1.md) | 2026-11-20 | Implementação | 01-mvp | Execução das Fases 0 e 1 até as tarefas que dependem do autor |
 | [0008](0008-repo-publico-release-e-fase-2.md) | 2026-11-20 | Implementação | 01-mvp | Release 0.1.0, correção do CI e Fase 2 (SPA local) |
 | [0009](0009-construir-tudo-antes-de-testar.md) | 2026-11-20 | Implementação | 01-mvp | Construir a aplicação completa e testar depois do deploy |
+| [0010](0010-fases-3-a-8.md) | 2026-11-20 | Implementação | 01-mvp | Fases 3 a 8: palco, servidor e sync, grupos, desktop, Android e polimento |
