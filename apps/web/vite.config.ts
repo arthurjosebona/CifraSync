@@ -3,11 +3,13 @@ import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vitest/config';
 import { VitePWA } from 'vite-plugin-pwa';
 
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   plugins: [
     react(),
     tailwindcss(),
     VitePWA({
+      // nos apps nativos (Tauri/Capacitor) os arquivos já estão no aparelho: sem service worker
+      disable: mode === 'native',
       // o app pergunta antes de recarregar com a versão nova (nunca no meio do palco)
       registerType: 'prompt',
       includeAssets: ['icon.svg'],
@@ -58,4 +60,4 @@ export default defineConfig({
     // testes do servidor criam banco (PGlite) e fazem hash de senha: mais tempo que o padrão
     testTimeout: 30_000,
   },
-});
+}));

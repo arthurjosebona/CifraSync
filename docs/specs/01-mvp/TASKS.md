@@ -456,12 +456,12 @@ Incluir no CI.
 
 **Branches:** `feature/desktop-tauri` (T64–T65) · `feature/desktop-release` (T66–T67) · `feature/ajustes-desktop` (correções da T68)
 
-### [ ] T64: Projeto Tauri
+### [x] T64: Projeto Tauri
 **Fazer:** `apps/desktop` com Tauri 2 carregando `apps/web/dist`; identificador e ícones; janela com tamanho mínimo; plugins de store (token), fullscreen, diálogo e arquivos; implementação `Platform` desktop.
 **Verificar:** `pnpm --filter @cifrasync/desktop tauri build --debug` no CI (Windows e Linux).
 **Depende de:** T35, T56
 
-### [ ] T65: Tela sempre ligada no desktop
+### [x] T65: Tela sempre ligada no desktop
 **Fazer:** comando Rust com a crate `keepawake` (Windows e Linux), chamado pela camada `Platform` ao entrar e sair do palco.
 **Verificar:** `cargo check` em `apps/desktop/src-tauri`.
 **Depende de:** T64
@@ -471,7 +471,7 @@ Incluir no CI.
 **Verificar:** os secrets aparecem na lista do repositório (`gh secret list`).
 **Depende de:** T64
 
-### [ ] T67: Updater e build de release do desktop
+### [x] T67: Updater e build de release do desktop
 **Fazer:**
 - plugin updater apontando para o `latest.json` da última release;
 - verificação de atualização na abertura;
