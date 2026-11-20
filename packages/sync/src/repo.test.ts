@@ -164,3 +164,22 @@ describe('configurações', () => {
     expect(await db.userSettings.count()).toBe(2);
   });
 });
+
+describe('consultas reativas (liveQuery)', () => {
+  it('ler configurações num banco novo não tenta gravar (ReadOnlyError)', async () => {
+    const { liveQuery } = await import('dexie');
+    const result = await new Promise<unknown>((resolve, reject) => {
+      const sub = liveQuery(() => getSettingsRows(db)).subscribe({
+        next: (v) => {
+          sub.unsubscribe();
+          resolve(v);
+        },
+        error: (e: unknown) => {
+          sub.unsubscribe();
+          reject(e);
+        },
+      });
+    });
+    expect(result).toEqual({});
+  });
+});
