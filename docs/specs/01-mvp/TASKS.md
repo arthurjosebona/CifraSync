@@ -107,7 +107,7 @@ Atualizar `docs/adr/README.md`.
 **Verificar:** `pnpm --filter @cifrasync/core test`.
 **Depende de:** T11
 
-### [ ] T13: AST da música e parser
+### [x] T13: AST da música e parser
 **Fazer:**
 - tipos `SongDoc`, `Block`, `Line`, `ChordAt` e `Segment`;
 - `parseSong` (linhas de cifra/letra/par, cabeçalhos, marcações `{refrao:N}`, `{voz2}`, `((…))`, `{tab}`, `{nota}`, `#`);
@@ -116,7 +116,7 @@ Atualizar `docs/adr/README.md`.
 **Verificar:** `pnpm --filter @cifrasync/core test`.
 **Depende de:** T11
 
-### [ ] T14: Formatação automática
+### [x] T14: Formatação automática
 **Fazer:** `autoFormat`:
 - normalização (tabs, NBSP, CRLF, espaços);
 - classificação de linhas por pontuação, incluindo o caso da palavra que parece acorde;
@@ -127,17 +127,17 @@ Atualizar `docs/adr/README.md`.
 **Verificar:** `pnpm --filter @cifrasync/core test`.
 **Depende de:** T13
 
-### [ ] T15: Cifras de teste
+### [x] T15: Cifras de teste
 **Fazer:** ≥ 30 cifras autorais ou de domínio público em `packages/core/fixtures/`, com o resultado esperado de classificação de cada uma. Testes de regressão usando essas fixtures.
 **Verificar:** `pnpm --filter @cifrasync/core test`.
 **Depende de:** T14
 
-### [ ] T16: Transposição do documento
+### [x] T16: Transposição do documento
 **Fazer:** `transposeDoc` com realinhamento de colunas (empurrar em caso de colisão) e tablaturas intactas.
 **Verificar:** `pnpm --filter @cifrasync/core test`.
 **Depende de:** T12, T13
 
-### [ ] T17: Capotraste e detecção de tom
+### [x] T17: Capotraste e detecção de tom
 **Fazer:** `applyCapo` (modos `shapes`/`sounding`) e `detectKey` (histograma de acordes diatônicos + primeiro e último acorde).
 **Verificar:** `pnpm --filter @cifrasync/core test`.
 **Depende de:** T16
@@ -152,7 +152,7 @@ Atualizar `docs/adr/README.md`.
 **Verificar:** `pnpm --filter @cifrasync/core test` (≥ 3 posições para os 9 acordes do critério da SPEC nos 3 instrumentos).
 **Depende de:** T18
 
-### [ ] T20: Conversão ChordPro
+### [x] T20: Conversão ChordPro
 **Fazer:** `toChordPro` e `fromChordPro` mapeando refrão, tab e comentários.
 **Verificar:** `pnpm --filter @cifrasync/core test`.
 **Depende de:** T13

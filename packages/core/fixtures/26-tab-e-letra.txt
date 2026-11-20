@@ -1,0 +1,9 @@
+D|{tab:Intro}
+T|e|--0-----0-----|
+T|B|----1-----1---|
+D|{/tab}
+B|
+C|C           G
+L|Depois do riff vem a letra
+C|Am          F
+L|E o povo canta junto

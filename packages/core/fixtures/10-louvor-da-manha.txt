@@ -1,0 +1,10 @@
+D|{refrao:1}
+C|D            A/C#
+L|Eu canto ao amanhecer
+C|Bm           G
+L|Com gratidão no peito
+C|D            A
+L|Tudo pode florescer
+C|G      A         D
+L|Quando o amor é perfeito
+D|{/refrao}
