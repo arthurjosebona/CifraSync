@@ -1,6 +1,6 @@
 {
   "name": "cifrasync",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
   "description": "Cifras, repertórios e teleprompter de palco — Web, Android e Desktop, offline e sincronizado.",
   "license": "MIT",
