@@ -540,12 +540,12 @@ O Claude corrige.
 
 **Branches:** `feature/import-export` (T75) · `feature/conta-sobre` (T76) · `feature/acessibilidade` (T77) · `feature/seguranca-desempenho` (T78) · `feature/ajustes-criterios` (correções da T79) · `feature/docs-v1` (T80) · `feature/identidade-visual` (nome e ícone da T81)
 
-### [ ] T75: Importação e exportação
+### [x] T75: Importação e exportação
 **Fazer:** importar `.txt` (com formatação automática) e `.cho`; exportar uma música (`.txt`/`.cho`); backup completo JSON (`/api/export` e local); restauração do backup.
 **Verificar:** `pnpm build`.
 **Depende de:** T20, T53
 
-### [ ] T76: Conta e "Sobre"
+### [x] T76: Conta e "Sobre"
 **Fazer:** excluir conta (API + limpeza local), tela "Sobre" com versão e plataforma, link para o repositório e aviso de que o projeto foi feito com auxílio de IA.
 **Verificar:** `pnpm build`.
 **Depende de:** T49
