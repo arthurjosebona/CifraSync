@@ -392,9 +392,9 @@ export default function Palco() {
 
       {/* avisos */}
       <div className="pointer-events-none absolute inset-x-0 top-10 flex flex-col items-center gap-2">
-        {atLastPage && (
+        {atLastPage && (isSetlist || page.total > 1 || mode !== 'paged') && (
           <span className="rounded-full bg-white/15 px-3 py-1 text-xs">
-            {lastEntry ? 'Fim do repertório' : 'Última página'}
+            {lastEntry && isSetlist ? 'Fim do repertório' : 'Última página'}
           </span>
         )}
         {hasUpdate && (
