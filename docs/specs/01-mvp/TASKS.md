@@ -196,7 +196,7 @@ Atualizar `docs/adr/README.md`.
 **Verificar:** `pnpm --filter @cifrasync/web build`.
 **Depende de:** T23, T26
 
-### [ ] T28: Visualização da música
+### [x] T28: Visualização da música
 **Fazer:** `SongView`, que renderiza o AST (acordes posicionados sobre a sílaba e cores de cada marcação), com controles de transposição, capo (formas/como soa) e grafia ♯/♭.
 **Verificar:** `pnpm --filter @cifrasync/web build`.
 **Depende de:** T17, T27
