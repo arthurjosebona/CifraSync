@@ -206,7 +206,7 @@ Atualizar `docs/adr/README.md`.
 **Verificar:** `pnpm --filter @cifrasync/web build`.
 **Depende de:** T14, T28
 
-### [ ] T30: Dicionário e preferência de posição
+### [x] T30: Dicionário e preferência de posição
 **Fazer:** tela Dicionário (instrumento, fundamental, tipo, todas as posições) e escolha da posição preferida por acorde, global ou por música, salva em `chord_prefs`.
 **Verificar:** `pnpm --filter @cifrasync/web build`.
 **Depende de:** T25, T26

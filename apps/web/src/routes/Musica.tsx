@@ -43,8 +43,14 @@ export default function Musica() {
   );
   const instrument = settings.stage.instrument as InstrumentId;
   const shapes = useMemo(
-    () => (display ? chordShapes(display.doc, instrument, song?.chordPrefs[instrument] ?? {}) : []),
-    [display, instrument, song?.chordPrefs],
+    () =>
+      display
+        ? chordShapes(display.doc, instrument, {
+            ...settings.chordPrefs[instrument],
+            ...song?.chordPrefs[instrument],
+          })
+        : [],
+    [display, instrument, song?.chordPrefs, settings.chordPrefs],
   );
 
   if (song === undefined) return null;
