@@ -62,7 +62,7 @@ Na `main`, só merge commit. Na `develop`, só squash.
 **Verificar:** `gh api repos/{owner}/{repo}/branches/main/protection` e `.../develop/protection` retornam a proteção ativa.
 **Depende de:** T6 (o check precisa ter rodado pelo menos uma vez)
 
-### [ ] T8: ADRs das decisões do PLAN
+### [x] T8: ADRs das decisões do PLAN
 **Fazer:** ADRs 0001 a 0008 em `docs/adr/`:
 - 0001 SPA única para todas as plataformas;
 - 0002 Tauri 2 no desktop;

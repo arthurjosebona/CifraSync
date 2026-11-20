@@ -24,6 +24,7 @@ export default {
         'ci',
         'deps',
         'docs',
+        'adr',
         'specs',
         'prompts',
         'release',
