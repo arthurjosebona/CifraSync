@@ -3,11 +3,13 @@ import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vitest/config';
 import { VitePWA } from 'vite-plugin-pwa';
 
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   plugins: [
     react(),
     tailwindcss(),
     VitePWA({
+      // nos apps nativos (Tauri/Capacitor) os arquivos já estão no aparelho: sem service worker
+      disable: mode === 'native',
       // o app pergunta antes de recarregar com a versão nova (nunca no meio do palco)
       registerType: 'prompt',
       includeAssets: ['icon.svg'],
@@ -56,4 +58,4 @@ export default defineConfig({
     // os testes e2e (Playwright) ficam em e2e/ e não rodam no Vitest
     exclude: ['e2e/**', 'node_modules/**', 'dist/**'],
   },
-});
+}));
