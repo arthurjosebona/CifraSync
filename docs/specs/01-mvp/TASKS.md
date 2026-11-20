@@ -301,7 +301,7 @@ Atualizar `docs/adr/README.md`.
 **Verificar:** `pnpm --filter @cifrasync/web build`.
 **Depende de:** T26, T37
 
-### [ ] T43: Testes e2e do palco
+### [x] T43: Testes e2e do palco
 **Fazer:** Playwright (Chromium e WebKit) cobrindo:
 - paginação por toque;
 - a página nunca começar com uma letra separada da sua cifra;
