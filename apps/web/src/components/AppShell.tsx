@@ -1,6 +1,8 @@
 import { BookOpen, Guitar, ListMusic, Settings, Users } from 'lucide-react';
 import { NavLink, Outlet } from 'react-router';
 
+import { SyncIndicator } from './SyncIndicator';
+
 const NAV = [
   { to: '/', label: 'Músicas', icon: BookOpen, end: true },
   { to: '/repertorios', label: 'Repertórios', icon: ListMusic, end: false },
@@ -37,9 +39,15 @@ export function AppShell() {
             </NavLink>
           ))}
         </nav>
+        <div className="mt-auto">
+          <SyncIndicator />
+        </div>
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">
+        <div className="fixed top-[env(safe-area-inset-top)] right-2 z-20 md:hidden">
+          <SyncIndicator compact />
+        </div>
         <main className="min-h-0 flex-1 overflow-y-auto pb-[calc(3.5rem+env(safe-area-inset-bottom))] md:pb-0">
           <Outlet />
         </main>
