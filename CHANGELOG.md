@@ -2,6 +2,12 @@
 
 Todas as mudanças relevantes do CifraSync. Gerado a partir dos Conventional Commits.
 
+## [0.3.1](https://github.com/arthurjosebona/CifraSync/compare/v0.3.0...v0.3.1) (2026-11-20)
+
+### Correções
+
+* **api:** encaminha todas as rotas /api/* para a função da Vercel ([495d5c8](https://github.com/arthurjosebona/CifraSync/commit/495d5c8c9154f2f5a9948af8ea36ce718d5528a6))
+
 ## [0.3.0](https://github.com/arthurjosebona/CifraSync/compare/v0.2.0...v0.3.0) (2026-11-20)
 
 ### Funcionalidades
