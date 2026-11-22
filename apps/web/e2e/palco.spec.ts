@@ -101,12 +101,12 @@ test('repertório avança para a próxima música no fim da última página', as
 
 test('no modo híbrido, rolar à mão não desliga a rolagem automática', async ({ page }) => {
   const id = await createSong(page, 'Híbrida', longSong('Terceira'));
+  // o modo do palco vem dos Ajustes
+  await page.goto('/configuracoes');
+  await page.getByLabel('Modo padrão').selectOption('hybrid');
+  await expect(page.getByLabel('Modo padrão')).toHaveValue('hybrid');
   await page.goto(`/palco/musica/${id}`);
-  // páginas → automática → híbrido
-  await page.getByRole('button', { name: /^Modo:/ }).click();
-  await page.getByRole('button', { name: /^Modo:/ }).click();
-  await expect(page.getByRole('button', { name: 'Modo: híbrido' })).toBeVisible();
-  await page.getByRole('button', { name: 'Rolar' }).click();
+  await page.keyboard.press('p');
 
   const scroller = page.locator('.stage .overflow-y-auto.song');
   await page.waitForTimeout(800);
@@ -117,4 +117,61 @@ test('no modo híbrido, rolar à mão não desliga a rolagem automática', async
   await page.waitForTimeout(1000);
   const later = await scroller.evaluate((el) => el.scrollTop);
   expect(later).toBeGreaterThan(after);
+});
+
+test('segurar 3 segundos abre o menu do tom; "Só agora" fecha sem salvar', async ({ page }) => {
+  const id = await createSong(page, 'Menu', 'G   C   D\nla la la');
+  await page.goto(`/palco/musica/${id}`);
+  await page.evaluate(() => document.fonts.ready);
+  const area = page.locator('.stage .flex.h-full').last();
+  const box = (await area.boundingBox())!;
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+
+  // toque curto: nada de menu
+  await page.mouse.down();
+  await page.mouse.up();
+  await expect(page.getByRole('dialog', { name: 'Tom' })).toHaveCount(0);
+
+  // segurando: aparece o progresso e, aos 3 s, o menu
+  await page.mouse.down();
+  await expect(page.getByText('Continue segurando para abrir o menu')).toBeVisible();
+  await expect(page.getByRole('dialog', { name: 'Tom' })).toBeVisible({ timeout: 5000 });
+  await page.mouse.up();
+
+  await page.getByRole('button', { name: 'Meio tom acima' }).click();
+  await page.getByRole('button', { name: 'Meio tom acima' }).click();
+  await expect(page.locator('header').getByText('A (+2)')).toBeVisible();
+  await page.getByRole('button', { name: /Só agora/ }).click();
+  await expect(page.getByRole('dialog', { name: 'Tom' })).toHaveCount(0);
+  await expect(page.locator('header').getByText('A (+2)')).toBeVisible();
+
+  // não foi salvo na música
+  await page.goto(`/musicas/${id}`);
+  await page.goto(`/palco/musica/${id}`);
+  await expect(page.locator('header').getByText('G', { exact: true })).toBeVisible();
+});
+
+test('repertório: voltar de uma música curta para uma longa não quebra o palco', async ({
+  page,
+}) => {
+  await createSong(page, 'Longa', longSong('Quarta'));
+  await createSong(page, 'Curta', 'G   D\nbem curta');
+  await page.goto('/repertorios');
+  await page.getByRole('button', { name: 'Novo' }).click();
+  await page.getByLabel('Nome (show, ensaio, evento)').fill('Ida e volta');
+  await page.getByRole('button', { name: 'Criar' }).click();
+  await page.waitForURL(/\/repertorios\/[0-9a-f-]+$/);
+  for (const title of ['Curta', 'Longa', 'Curta']) {
+    await page.getByPlaceholder('Buscar música na biblioteca').fill(title);
+    await page
+      .getByRole('button', { name: new RegExp(`^${title}`) })
+      .first()
+      .click();
+  }
+  await page.getByRole('button', { name: 'Tocar' }).click();
+  await page.evaluate(() => document.fonts.ready);
+  for (let i = 0; i < 12; i++) await page.keyboard.press('ArrowRight');
+  for (let i = 0; i < 12; i++) await page.keyboard.press('ArrowLeft');
+  await expect(page.getByText('Unexpected Application Error')).toHaveCount(0);
+  await expect(page.locator('header').getByText('Curta')).toBeVisible();
 });
