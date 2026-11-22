@@ -29,6 +29,12 @@ export const user = pgTable('user', {
   image: text('image'),
   username: text('username').unique(),
   displayUsername: text('display_username'),
+  /** 'admin' para quem foi promovido pela tela de Administração (ver ADMIN_USERNAMES). */
+  role: text('role').notNull().default('user'),
+  /** Ligado ao gerar senha temporária: o app pede a troca no próximo acesso. */
+  mustChangePassword: boolean('must_change_password').notNull().default(false),
+  /** Conta desativada por um administrador: não entra e some da busca. */
+  disabled: boolean('disabled').notNull().default(false),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
 });

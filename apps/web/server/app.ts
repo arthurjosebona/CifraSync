@@ -10,6 +10,7 @@ import { bodyLimit } from 'hono/body-limit';
 import { secureHeaders } from 'hono/secure-headers';
 import { z } from 'zod';
 
+import { registerAccountRoutes } from './admin.js';
 import { NATIVE_ORIGINS, type Auth } from './auth.js';
 import type { Db } from './db/client.js';
 import { groupSetlists, setlistItems, setlists, songs, user, userSettings } from './db/schema.js';
@@ -22,6 +23,8 @@ export interface AppDeps {
   auth: Auth;
   /** Origens web extras permitidas no CORS (ex.: previews da Vercel). */
   webOrigins?: string[];
+  /** Nomes de usuário da variável ADMIN_USERNAMES. */
+  adminUsernames?: string[];
 }
 
 type Env = { Variables: { userId: string } };
@@ -34,7 +37,7 @@ function safeJson(text: string): unknown {
   }
 }
 
-export function createApp({ db, auth, webOrigins = [] }: AppDeps) {
+export function createApp({ db, auth, webOrigins = [], adminUsernames = [] }: AppDeps) {
   const app = new Hono<Env>().basePath('/api');
   const origins = [...NATIVE_ORIGINS, ...webOrigins];
 
@@ -87,7 +90,13 @@ export function createApp({ db, auth, webOrigins = [] }: AppDeps) {
     const users = await db
       .select({ id: user.id, username: user.username, name: user.name })
       .from(user)
-      .where(and(like(user.username, `${escaped}%`), ne(user.id, c.get('userId'))))
+      .where(
+        and(
+          like(user.username, `${escaped}%`),
+          ne(user.id, c.get('userId')),
+          eq(user.disabled, false),
+        ),
+      )
       .limit(LIMITS.usernameSearchMaxResults);
     return c.json({ users: users.map((u) => ({ ...u, username: u.username ?? '' })) });
   });
@@ -126,6 +135,8 @@ export function createApp({ db, auth, webOrigins = [] }: AppDeps) {
     await db.delete(user).where(eq(user.id, userId));
     return c.json({ ok: true });
   });
+
+  registerAccountRoutes(app, { db, auth, adminUsernames });
 
   app.onError((err, c) => {
     console.error(err);

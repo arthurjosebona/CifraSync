@@ -11,7 +11,6 @@ export default function Login() {
   const [login, setLogin] = useState('');
   const [name, setName] = useState('');
   const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -27,7 +26,7 @@ export default function Login() {
       const err =
         mode === 'entrar'
           ? await signIn(login, password)
-          : await signUp({ name, username, email, password });
+          : await signUp({ name, username, password });
       if (err) setError(err);
       else navigate('/', { replace: true });
     } catch {
@@ -70,7 +69,7 @@ export default function Login() {
           }}
         >
           {mode === 'entrar' ? (
-            <Field label="Nome de usuário ou e-mail">
+            <Field label="Nome de usuário">
               <Input
                 value={login}
                 onChange={(e) => setLogin(e.target.value)}
@@ -95,17 +94,8 @@ export default function Login() {
                   onChange={(e) => setUsername(e.target.value.toLowerCase())}
                   autoComplete="username"
                   autoCapitalize="off"
-                  pattern="[a-z0-9][a-z0-9._\-]{1,28}[a-z0-9]"
-                  title="3 a 30 caracteres: letras minúsculas, números, ponto, hífen ou _"
-                  required
-                />
-              </Field>
-              <Field label="E-mail">
-                <Input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  autoComplete="email"
+                  pattern="[a-z0-9_.]{3,30}"
+                  title="3 a 30 caracteres: letras minúsculas, números, ponto ou _"
                   required
                 />
               </Field>
@@ -129,9 +119,13 @@ export default function Login() {
           <Button variant="primary" type="submit" disabled={busy}>
             {busy ? 'Aguarde…' : mode === 'entrar' ? 'Entrar' : 'Criar conta'}
           </Button>
-          {mode === 'criar' && (
+          {mode === 'criar' ? (
             <p className="text-xs text-muted">
               As músicas que você já criou neste aparelho passam para a sua conta.
+            </p>
+          ) : (
+            <p className="text-xs text-muted">
+              Esqueceu a senha? Peça a um administrador do app uma senha temporária.
             </p>
           )}
         </form>
