@@ -182,4 +182,26 @@ describe('consultas reativas (liveQuery)', () => {
     });
     expect(result).toEqual({});
   });
+
+  it('configuração salva chega na consulta reativa (com conta e sem conta)', async () => {
+    const { liveQuery } = await import('dexie');
+    for (const comConta of [false, true]) {
+      const base = new CifraDB(`teste-${uuidv7()}`);
+      await getCurrentUserId(base);
+      if (comConta) await base.meta.put({ key: 'userId', value: 'usuario-da-conta' });
+      const seen: unknown[] = [];
+      const sub = liveQuery(() => getSettingsRows(base)).subscribe({
+        next: (v) => seen.push(v.global?.data.theme),
+      });
+      await new Promise((r) => setTimeout(r, 50));
+      await saveSettings(base, { theme: 'dark' }, 'global');
+      await new Promise((r) => setTimeout(r, 100));
+      await saveSettings(base, { theme: 'light' }, 'global');
+      await new Promise((r) => setTimeout(r, 100));
+      sub.unsubscribe();
+      expect(seen.at(-1)).toBe('light');
+      expect(seen).toContain('dark');
+      await base.delete();
+    }
+  });
 });

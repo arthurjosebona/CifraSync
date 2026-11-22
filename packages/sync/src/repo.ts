@@ -51,9 +51,13 @@ export async function getCurrentUserId(db: CifraDB): Promise<string> {
   return id;
 }
 
-/** Id do dono dos dados sem criar nada (seguro dentro de liveQuery). */
+/**
+ * Id do dono dos dados sem criar nada (seguro dentro de liveQuery). Uma leitura só, para o
+ * Dexie continuar observando as consultas feitas depois dela.
+ */
 export async function peekCurrentUserId(db: CifraDB): Promise<string | undefined> {
-  return (await metaGet<string>(db, 'userId')) ?? (await metaGet<string>(db, 'localUserId'));
+  const [user, local] = await db.meta.bulkGet(['userId', 'localUserId']);
+  return (user?.value ?? local?.value) as string | undefined;
 }
 
 /**
@@ -375,21 +379,33 @@ export async function duplicateSetlist(db: CifraDB, id: string): Promise<Setlist
 export async function getSettingsRows(
   db: CifraDB,
 ): Promise<{ global?: UserSettings; device?: UserSettings }> {
-  // só leitura: roda dentro de consultas reativas (liveQuery), que não podem gravar
-  const userId = await peekCurrentUserId(db);
-  const deviceId = await metaGet<string>(db, 'deviceId');
+  // Só leitura: roda dentro de consultas reativas (liveQuery), que não podem gravar.
+  // Todas as leituras começam juntas: depois de vários `await` encadeados o Dexie deixa de
+  // observar as leituras seguintes, e a tela não via a configuração recém-salva.
+  const [userRow, localRow, deviceRow, rows] = await Promise.all([
+    db.meta.get('userId'),
+    db.meta.get('localUserId'),
+    db.meta.get('deviceId'),
+    db.userSettings.toArray(),
+  ]);
+  const userId = (userRow?.value ?? localRow?.value) as string | undefined;
+  const deviceId = deviceRow?.value as string | undefined;
   if (!userId) return {};
-  const rows = await db.userSettings.where('userId').equals(userId).toArray();
+  const mine = rows.filter((r) => r.userId === userId && !r.deleted);
   return {
-    global: rows.find((r) => r.deviceId === null && !r.deleted),
-    device: rows.find((r) => r.deviceId === deviceId && !r.deleted),
+    global: mine.find((r) => r.deviceId === null),
+    device: mine.find((r) => r.deviceId === deviceId),
   };
 }
 
-/** Grava configurações globais (`scope: 'global'`) ou só deste dispositivo. */
+/**
+ * Grava configurações globais (`scope: 'global'`) ou só deste dispositivo.
+ * `data` pode ser uma função que recebe o que está salvo: leitura e gravação acontecem na
+ * mesma transação, então duas alterações seguidas não se sobrescrevem.
+ */
 export async function saveSettings(
   db: CifraDB,
-  data: Record<string, unknown>,
+  data: Record<string, unknown> | ((current: Record<string, unknown>) => Record<string, unknown>),
   scope: 'global' | 'device',
 ): Promise<UserSettings> {
   return db.transaction('rw', db.userSettings, db.outbox, db.meta, async () => {
@@ -399,7 +415,7 @@ export async function saveSettings(
     const existing = scope === 'device' ? device : global;
     const row = await stamp(db, {
       ...(existing ?? { ...newSyncColumns(), updatedByDevice: '', userId, deviceId }),
-      data,
+      data: typeof data === 'function' ? data(existing?.data ?? {}) : data,
     } satisfies UserSettings);
     await db.userSettings.put(row);
     await enqueue(db, 'userSettings', 'upsert', row as unknown as Row);

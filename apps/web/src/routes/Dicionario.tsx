@@ -39,7 +39,7 @@ const TYPES: [string, string][] = [
 ];
 
 export default function Dicionario() {
-  const { settings, global } = useSettings();
+  const { settings } = useSettings();
   const [root, setRoot] = useState('C');
   const [type, setType] = useState('');
   const instrument = settings.stage.instrument as InstrumentId;
@@ -59,7 +59,7 @@ export default function Dicionario() {
         <Field label="Instrumento">
           <Select
             value={instrument}
-            onChange={(e) => void updateSettings(global, { stage: { instrument: e.target.value } })}
+            onChange={(e) => void updateSettings({ stage: { instrument: e.target.value } })}
           >
             {Object.values(INSTRUMENTS).map((i) => (
               <option key={i.id} value={i.id}>
@@ -72,7 +72,7 @@ export default function Dicionario() {
           <Select
             value={lefty ? 'canhoto' : 'destro'}
             onChange={(e) =>
-              void updateSettings(global, { stage: { lefty: e.target.value === 'canhoto' } })
+              void updateSettings({ stage: { lefty: e.target.value === 'canhoto' } })
             }
           >
             <option value="destro">Destro</option>
@@ -111,7 +111,7 @@ export default function Dicionario() {
                 <button
                   type="button"
                   onClick={() =>
-                    void updateSettings(global, { chordPrefs: { [instrument]: { [name]: i } } })
+                    void updateSettings({ chordPrefs: { [instrument]: { [name]: i } } })
                   }
                   aria-pressed={i === preferred}
                   className={`relative flex w-full flex-col items-center rounded-xl border p-2 ${
