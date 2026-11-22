@@ -1,18 +1,15 @@
-import type { InstrumentId } from '@cifrasync/core';
 import { addSetlistItem, copySongToLibrary, deleteSong, saveSong } from '@cifrasync/sync';
 import { Copy, Download, Minus, Pencil, Play, Plus, RotateCcw, Save, Trash2 } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
 
-import { ChordStrip } from '../components/ChordStrip';
 import { Empty, Page } from '../components/Page';
 import { SongView } from '../components/SongView';
 import { Button, IconButton, Select } from '../components/ui';
-import { db, useSetlists, useSettings, useSong } from '../lib/data';
+import { db, useSetlists, useSong } from '../lib/data';
 import { useMyId } from '../lib/groups';
 import { exportSongChordPro, exportSongText } from '../lib/transfer';
 import {
-  chordShapes,
   keyLabel,
   keyOptions,
   songDisplay,
@@ -25,7 +22,7 @@ export default function Musica() {
   const navigate = useNavigate();
   const song = useSong(id);
   const setlists = useSetlists();
-  const { settings } = useSettings();
+
   const myId = useMyId();
 
   const [semitones, setSemitones] = useState(0);
@@ -43,17 +40,6 @@ export default function Musica() {
   const display = useMemo(
     () => (song ? songDisplay(song, { semitones, spelling, capoMode }) : null),
     [song, semitones, spelling, capoMode],
-  );
-  const instrument = settings.stage.instrument as InstrumentId;
-  const shapes = useMemo(
-    () =>
-      display
-        ? chordShapes(display.doc, instrument, {
-            ...settings.chordPrefs[instrument],
-            ...song?.chordPrefs[instrument],
-          })
-        : [],
-    [display, instrument, song?.chordPrefs, settings.chordPrefs],
   );
 
   if (song === undefined) return null;
@@ -182,26 +168,6 @@ export default function Musica() {
           </div>
         </div>
       )}
-
-      <div className="mb-5">
-        <ChordStrip
-          shapes={shapes}
-          instrument={instrument}
-          lefty={settings.stage.lefty}
-          onCycle={
-            isMine
-              ? (name, next) =>
-                  void saveSong(db, {
-                    id: song.id,
-                    chordPrefs: {
-                      ...song.chordPrefs,
-                      [instrument]: { ...(song.chordPrefs[instrument] ?? {}), [name]: next },
-                    },
-                  })
-              : undefined
-          }
-        />
-      </div>
 
       <div className="rounded-xl border border-border bg-surface p-4 md:p-6">
         {song.content.trim() ? (

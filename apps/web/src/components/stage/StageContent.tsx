@@ -102,7 +102,13 @@ export const StageContent = forwardRef<StageContentApi, StageContentProps>(funct
 
   // ---------------------------------------------------------------- paginação
   const measure = useRef<(HTMLDivElement | null)[]>([]);
-  const [pages, setPages] = useState<number[][]>([]);
+  // a divisão guarda as linhas para as quais foi calculada: ao trocar de música, a divisão
+  // da anterior não pode ser aplicada às linhas da nova (índices fora do lugar)
+  const [layout, setLayout] = useState<{ units: typeof units; pages: number[][] }>({
+    units,
+    pages: [],
+  });
+  const pages = useMemo(() => (layout.units === units ? layout.pages : []), [layout, units]);
   useLayoutEffect(() => {
     if (mode !== 'paged' || !size.h) return;
     const heights = units.map((_, i) => {
@@ -113,7 +119,11 @@ export const StageContent = forwardRef<StageContentApi, StageContentProps>(funct
     });
     const next = paginate(heights, keepWithNext(units), size.h);
     // só atualiza se a divisão mudou (evita render em laço)
-    setPages((prev) => (JSON.stringify(prev) === JSON.stringify(next) ? prev : next));
+    setLayout((prev) =>
+      prev.units === units && JSON.stringify(prev.pages) === JSON.stringify(next)
+        ? prev
+        : { units, pages: next },
+    );
   }, [units, mode, size.h, colWidth, opts, stage.fontSize, stage.lineHeight, stage.fontFamily]);
 
   const spreads = useMemo(() => {
@@ -309,9 +319,7 @@ export const StageContent = forwardRef<StageContentApi, StageContentProps>(funct
                 className={`${songClass} h-full overflow-hidden`}
                 style={{ width: colWidth }}
               >
-                {page.map((ui) => (
-                  <UnitView key={ui} unit={units[ui]!} opts={opts} />
-                ))}
+                {page.map((ui) => units[ui] && <UnitView key={ui} unit={units[ui]} opts={opts} />)}
               </div>
             ))}
           </div>

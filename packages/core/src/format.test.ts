@@ -40,6 +40,29 @@ describe('autoFormat', () => {
     expect(report.counts.tab).toBe(2);
   });
 
+  it('agrupa a caixinha curta de tablatura ("E|---|" com repetição)', () => {
+    const src = 'E|---|\nB|---|\nG|---| (4x)\nD|---|\nA|---|\nE|---|\n\nLetra';
+    expect(autoFormat(src).text).toBe(
+      '{tab}\nE|---|\nB|---|\nG|---| (4x)\nD|---|\nA|---|\nE|---|\n{/tab}\n\nLetra',
+    );
+  });
+
+  it('não trata uma linha curta solta como tablatura', () => {
+    expect(autoFormat('E|---|\nLetra').text).toBe('E|---|\nLetra');
+  });
+
+  it('tira a linha "Tom: E" e devolve o tom no relatório', () => {
+    const { text, report } = autoFormat('Tom:  E\n\n      E\nFui criado na campanha');
+    expect(report.key).toBe('E');
+    expect(text).toBe('      E\nFui criado na campanha');
+  });
+
+  it('aceita rótulo entre colchetes numa linha de acordes ("[Intro] E B7 E")', () => {
+    const { report } = autoFormat('[Intro] E  B7  E');
+    expect(report.unknown).toEqual([]);
+    expect(report.counts.chords).toBe(1);
+  });
+
   it('não mexe dentro de {tab} existente', () => {
     const src = '{tab}\nqualquer coisa\n{/tab}';
     expect(autoFormat(src).text).toBe(src);

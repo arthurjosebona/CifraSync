@@ -128,6 +128,9 @@ export function formatKey(key: Key): string {
 
 /** Grafia que um tom pede para os acordes. */
 export function spellingForKey(key: Key): Spelling {
+  // o nome do tom manda: F# pede sustenidos e Gb pede bemóis (mesma nota, grafias diferentes)
+  if (key.tonic.name.includes('#')) return 'sharps';
+  if (key.tonic.name.includes('b')) return 'flats';
   const pc = key.tonic.pc;
   if (key.minor) {
     if (NEUTRAL_MINOR.has(pc)) return 'default';

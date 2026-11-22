@@ -1,5 +1,5 @@
 import { saveSetlist } from '@cifrasync/sync';
-import { CalendarDays, Plus } from 'lucide-react';
+import { CalendarDays, MoreVertical, Plus } from 'lucide-react';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 
@@ -65,10 +65,11 @@ export default function Repertorios() {
       ) : (
         <ul className="divide-y divide-border overflow-hidden rounded-xl border border-border bg-surface">
           {setlists.map((s) => (
-            <li key={s.id}>
+            <li key={s.id} className="flex items-stretch">
               <Link
-                to={`/repertorios/${s.id}`}
-                className="flex min-h-14 items-center gap-3 px-4 py-2 hover:bg-surface-2"
+                to={`/palco/repertorio/${s.id}`}
+                title="Tocar o repertório"
+                className="flex min-h-14 min-w-0 flex-1 items-center gap-3 px-4 py-2 hover:bg-surface-2"
               >
                 <span className="min-w-0 flex-1 truncate font-medium">{s.name}</span>
                 {myId && s.ownerId !== myId && (
@@ -82,6 +83,14 @@ export default function Repertorios() {
                     {formatDate(s.eventDate)}
                   </span>
                 )}
+              </Link>
+              <Link
+                to={`/repertorios/${s.id}`}
+                aria-label={`Opções de ${s.name}`}
+                title="Detalhes, editar e mais opções"
+                className="flex size-14 shrink-0 items-center justify-center text-muted hover:bg-surface-2 hover:text-text"
+              >
+                <MoreVertical className="size-5" aria-hidden />
               </Link>
             </li>
           ))}

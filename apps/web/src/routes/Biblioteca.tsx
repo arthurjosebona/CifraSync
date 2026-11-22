@@ -1,4 +1,4 @@
-import { FileUp, Plus, Search } from 'lucide-react';
+import { FileUp, MoreVertical, Plus, Search } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 
@@ -130,10 +130,11 @@ export default function Biblioteca() {
       ) : (
         <ul className="divide-y divide-border overflow-hidden rounded-xl border border-border bg-surface">
           {songs.map((s) => (
-            <li key={s.id}>
+            <li key={s.id} className="flex items-stretch">
               <Link
-                to={`/musicas/${s.id}`}
-                className="flex min-h-14 items-center gap-3 px-4 py-2 hover:bg-surface-2"
+                to={`/palco/musica/${s.id}`}
+                title="Tocar"
+                className="flex min-h-14 min-w-0 flex-1 items-center gap-3 px-4 py-2 hover:bg-surface-2"
               >
                 <div className="min-w-0 flex-1">
                   <div className="truncate font-medium">{s.title}</div>
@@ -146,6 +147,14 @@ export default function Biblioteca() {
                     {s.key}
                   </span>
                 )}
+              </Link>
+              <Link
+                to={`/musicas/${s.id}`}
+                aria-label={`Opções de ${s.title}`}
+                title="Detalhes, editar e mais opções"
+                className="flex size-14 shrink-0 items-center justify-center text-muted hover:bg-surface-2 hover:text-text"
+              >
+                <MoreVertical className="size-5" aria-hidden />
               </Link>
             </li>
           ))}

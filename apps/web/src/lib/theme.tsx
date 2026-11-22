@@ -39,7 +39,7 @@ interface ThemeContextValue {
 const ThemeContext = createContext<ThemeContextValue | null>(null);
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const { settings, global, loaded } = useSettings();
+  const { settings, loaded } = useSettings();
   const [initial] = useState<ThemePreference>(readStored);
   const preference: ThemePreference = loaded ? settings.theme : initial;
   const [systemDark, setSystemDark] = useState(systemPrefersDark);
@@ -65,10 +65,10 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       resolved,
       setPreference: (p) => {
         storeLocal(p);
-        void updateSettings(global, { theme: p });
+        void updateSettings({ theme: p });
       },
     }),
-    [preference, resolved, global],
+    [preference, resolved],
   );
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;

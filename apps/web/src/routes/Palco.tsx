@@ -1,50 +1,41 @@
-import type { InstrumentId } from '@cifrasync/core';
 import type { Song } from '@cifrasync/shared';
 import { saveSong, updateSetlistItem } from '@cifrasync/sync';
-import {
-  ChevronLeft,
-  ChevronRight,
-  Guitar,
-  ListMusic,
-  Maximize,
-  Minus,
-  Pause,
-  Play,
-  Plus,
-  Rows3,
-  X,
-} from 'lucide-react';
+import { Check, LogOut, Minus, Plus, RotateCcw } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router';
 
-import { ChordStrip } from '../components/ChordStrip';
-import {
-  StageContent,
-  type StageContentApi,
-  type StageMode,
-  type TapZone,
-} from '../components/stage/StageContent';
+import { StageContent, type StageContentApi, type TapZone } from '../components/stage/StageContent';
 import { db, useSetlist, useSetlistItems, useSettings, useSong, useSongs } from '../lib/data';
-import { chordShapes, keyLabel, songDisplay } from '../lib/music';
+import { useMyId } from '../lib/groups';
+import { keyLabel, songDisplay } from '../lib/music';
 import { platform } from '../platform';
 
 interface Entry {
-  /** Chave única na sessão (o item do repertório ou um id provisório). */
+  /** Chave única na sessão (o item do repertório ou a própria música). */
   key: string;
   songId: string;
   itemId: string | null;
   /** Transposição salva para esta entrada (item do repertório ou música). */
   baseSemitones: number;
-  provisional?: boolean;
   /** Momento ("Intervalo") que vem antes desta música no repertório. */
   momentBefore?: string;
 }
 
 const DEFAULT_SPEED = 30; // px/s
-const CONTROLS_HIDE_MS = 4000;
+/** Quanto tempo segurar o dedo na tela para abrir o menu. */
+const HOLD_MS = 3000;
+/** A barra de progresso só aparece depois deste tempo (um toque normal não mostra nada). */
+const HOLD_HINT_MS = 400;
+const HOLD_MAX_MOVE = 12;
 
 function wrap12(n: number) {
   return ((((n + 6) % 12) + 12) % 12) - 6;
+}
+
+function semitoneLabel(n: number) {
+  if (n === 0) return 'tom original';
+  const abs = Math.abs(n);
+  return `${n > 0 ? '+' : '−'}${abs} ${abs === 1 ? 'semitom' : 'semitons'}`;
 }
 
 export default function Palco() {
@@ -52,8 +43,9 @@ export default function Palco() {
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const isSetlist = pathname.startsWith('/palco/repertorio');
-  const { settings } = useSettings();
+  const { settings, loaded: settingsLoaded } = useSettings();
   const stage = settings.stage;
+  const myId = useMyId();
 
   const single = useSong(isSetlist ? undefined : id);
   const setlist = useSetlist(isSetlist ? id : undefined);
@@ -62,7 +54,7 @@ export default function Palco() {
   const songs = useMemo(() => new Map((allSongs ?? []).map((s) => [s.id, s])), [allSongs]);
 
   // ------------------------------------------------------------ fila da sessão
-  const baseEntries = useMemo<Entry[]>(() => {
+  const entries = useMemo<Entry[]>(() => {
     if (!isSetlist) {
       return single
         ? [{ key: single.id, songId: single.id, itemId: null, baseSemitones: single.transpose }]
@@ -89,19 +81,11 @@ export default function Palco() {
     return out;
   }, [isSetlist, single, items, songs]);
 
-  const [provisional, setProvisional] = useState<{ after: string; entry: Entry }[]>([]);
-  const entries = useMemo(() => {
-    const out = [...baseEntries];
-    for (const p of provisional) {
-      const i = out.findIndex((e) => e.key === p.after);
-      out.splice(i + 1, 0, p.entry);
-    }
-    return out;
-  }, [baseEntries, provisional]);
-
   const [index, setIndex] = useState(0);
   const [startAtEnd, setStartAtEnd] = useState(false);
-  const entry = entries[Math.min(index, entries.length - 1)];
+  // o índice nunca passa do fim da fila (ex.: música removida do repertório pelo sync)
+  const current = Math.max(0, Math.min(index, entries.length - 1));
+  const entry = entries[current];
 
   // a música em execução fica "congelada": mudanças do sync só entram na próxima música
   const [snapshot, setSnapshot] = useState<{ key: string; song: Song } | null>(null);
@@ -110,7 +94,8 @@ export default function Palco() {
   const song = snapshot?.key === entry?.key ? snapshot?.song : undefined;
   const hasUpdate = !!(song && live && live.updatedAt !== song.updatedAt);
 
-  // ------------------------------------------------------------ tom e exibição
+  // ------------------------------------------------------------ tom
+  // Tom "só agora": vale até sair do palco (ou fechar o repertório). Salvar grava na música.
   const [semitones, setSemitones] = useState<Record<string, number>>({});
   const st = entry ? (semitones[entry.key] ?? entry.baseSemitones) : 0;
   const display = useMemo(
@@ -118,20 +103,24 @@ export default function Palco() {
       song ? songDisplay(song, { semitones: st, spelling: 'auto', capoMode: 'shapes' }) : null,
     [song, st],
   );
-  const instrument = stage.instrument as InstrumentId;
-  const shapes = useMemo(
-    () =>
-      display
-        ? chordShapes(display.doc, instrument, {
-            ...settings.chordPrefs[instrument],
-            ...song?.chordPrefs[instrument],
-          })
-        : [],
-    [display, instrument, settings.chordPrefs, song?.chordPrefs],
+  const originalKey = useMemo(
+    () => (song ? songDisplay(song, { semitones: 0, spelling: 'auto', capoMode: 'shapes' }) : null),
+    [song],
   );
 
-  // ------------------------------------------------------------ modo e rolagem
-  const [mode, setMode] = useState<StageMode>(stage.navigation);
+  const transpose = useCallback(
+    (n: number) => {
+      if (!entry) return;
+      setSemitones((s) => {
+        const cur = s[entry.key] ?? entry.baseSemitones;
+        return { ...s, [entry.key]: n === 0 ? entry.baseSemitones : wrap12(cur + n) };
+      });
+    },
+    [entry],
+  );
+
+  // ------------------------------------------------------------ rolagem
+  const mode = stage.navigation;
   const [playing, setPlaying] = useState(false);
   const [speeds, setSpeeds] = useState<Record<string, number>>({});
   const [scrollable, setScrollable] = useState(0);
@@ -146,30 +135,9 @@ export default function Palco() {
   const [page, setPage] = useState({ current: 0, total: 1 });
   const [atScrollEnd, setAtScrollEnd] = useState(false);
   const onPageChange = useCallback(
-    (current: number, total: number) => setPage({ current, total }),
+    (cur: number, total: number) => setPage({ current: cur, total }),
     [],
   );
-
-  // ------------------------------------------------------------ controles
-  const [controls, setControls] = useState(true);
-  const hideTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
-  const showControls = useCallback(() => {
-    setControls(true);
-    clearTimeout(hideTimer.current);
-    hideTimer.current = setTimeout(() => setControls(false), CONTROLS_HIDE_MS);
-  }, []);
-  useEffect(() => {
-    hideTimer.current = setTimeout(() => setControls(false), CONTROLS_HIDE_MS);
-    return () => clearTimeout(hideTimer.current);
-  }, []);
-
-  const [drawer, setDrawer] = useState(false);
-  const [chordsOpen, setChordsOpen] = useState(false);
-  const [pendingSave, setPendingSave] = useState<{
-    itemId: string;
-    semitones: number;
-    title: string;
-  } | null>(null);
 
   // ------------------------------------------------------------ tela ligada
   useEffect(() => {
@@ -183,24 +151,20 @@ export default function Palco() {
   const content = useRef<StageContentApi>(null);
   const goTo = useCallback(
     (to: number, atEnd = false) => {
-      if (to < 0 || to >= entries.length || !entry) return;
-      if (entry.itemId && st !== entry.baseSemitones) {
-        setPendingSave({ itemId: entry.itemId, semitones: st, title: song?.title ?? '' });
-        setTimeout(() => setPendingSave(null), 8000);
-      }
+      if (to < 0 || to >= entries.length) return;
       setPlaying(false);
       setStartAtEnd(atEnd);
       setIndex(to);
     },
-    [entries.length, entry, st, song?.title],
+    [entries.length],
   );
 
   const onBoundary = useCallback(
     (dir: 'next' | 'prev') => {
-      if (dir === 'next') goTo(index + 1);
-      else goTo(index - 1, true);
+      if (dir === 'next') goTo(current + 1);
+      else goTo(current - 1, true);
     },
-    [goTo, index],
+    [goTo, current],
   );
 
   const exit = useCallback(() => {
@@ -214,20 +178,69 @@ export default function Palco() {
     setSpeeds((s) => ({ ...s, [entry.key]: next }));
     void saveSong(db, { id: song.id, scrollSpeed: Math.round(next * 10) / 10 });
   };
-  const transpose = (n: number) => {
-    if (!entry) return;
-    setSemitones((s) => ({ ...s, [entry.key]: n === 0 ? entry.baseSemitones : wrap12(st + n) }));
+
+  // ------------------------------------------------------------ menu (segurar 3 s)
+  const [menu, setMenu] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const [holding, setHolding] = useState(false);
+  const hold = useRef<{
+    x: number;
+    y: number;
+    hint: ReturnType<typeof setTimeout>;
+    open: ReturnType<typeof setTimeout>;
+  } | null>(null);
+
+  const cancelHold = useCallback(() => {
+    if (!hold.current) return;
+    clearTimeout(hold.current.hint);
+    clearTimeout(hold.current.open);
+    hold.current = null;
+    setHolding(false);
+  }, []);
+  useEffect(() => cancelHold, [cancelHold]);
+
+  const openMenu = useCallback(() => {
+    setPlaying(false);
+    setSaved(false);
+    setMenu(true);
+  }, []);
+
+  const onHoldStart = (e: React.PointerEvent) => {
+    if (menu || !e.isPrimary) return;
+    cancelHold();
+    hold.current = {
+      x: e.clientX,
+      y: e.clientY,
+      hint: setTimeout(() => setHolding(true), HOLD_HINT_MS),
+      open: setTimeout(() => {
+        hold.current = null;
+        setHolding(false);
+        navigator.vibrate?.(30);
+        openMenu();
+      }, HOLD_MS),
+    };
+  };
+  const onHoldMove = (e: React.PointerEvent) => {
+    const h = hold.current;
+    if (h && Math.hypot(e.clientX - h.x, e.clientY - h.y) > HOLD_MAX_MOVE) cancelHold();
   };
 
   const onTap = (zone: TapZone) => {
     if (zone === 'center') {
       if (mode !== 'paged') setPlaying((p) => !p);
-      if (controls) setControls(false);
-      else showControls();
       return;
     }
     if (zone === 'right') content.current?.next();
     else content.current?.prev();
+  };
+
+  const canSaveToSong = !!song && (!myId || song.ownerId === myId);
+  const saveKeyToSong = async () => {
+    if (!song || !entry) return;
+    await saveSong(db, { id: song.id, transpose: st });
+    // o item do repertório passa a seguir o tom salvo na música
+    if (entry.itemId) await updateSetlistItem(db, entry.itemId, { transpose: null });
+    setSaved(true);
   };
 
   // ------------------------------------------------------------ teclado e pedais
@@ -239,12 +252,14 @@ export default function Palco() {
         case 'ArrowDown':
         case 'PageDown':
         case ' ':
+          if (menu) return;
           e.preventDefault();
           content.current?.next();
           break;
         case 'ArrowLeft':
         case 'ArrowUp':
         case 'PageUp':
+          if (menu) return;
           e.preventDefault();
           content.current?.prev();
           break;
@@ -268,8 +283,14 @@ export default function Palco() {
         case 'P':
           if (mode !== 'paged') setPlaying((p) => !p);
           break;
+        case 'm':
+        case 'M':
+        case 'Enter':
+          if (menu) setMenu(false);
+          else openMenu();
+          break;
         case 'Escape':
-          if (drawer) setDrawer(false);
+          if (menu) setMenu(false);
           else exit();
           break;
       }
@@ -278,14 +299,11 @@ export default function Palco() {
     return () => window.removeEventListener('keydown', onKey);
   });
 
-  // ------------------------------------------------------------ busca da adição provisória
-  const [search, setSearch] = useState('');
-  const found = useSongs({ query: search.trim() || undefined });
-
   // ------------------------------------------------------------ render
   const loading =
     (isSetlist ? setlist === undefined || items === undefined : single === undefined) ||
-    allSongs === undefined;
+    allSongs === undefined ||
+    !settingsLoaded;
   if (loading) return <div className="stage h-full" />;
   if (!entry || !display || !song) {
     return (
@@ -310,23 +328,26 @@ export default function Palco() {
     '--song-tab': colors.tab,
     '--song-note': colors.note,
     '--stage-transition': stage.transition === 'none' ? '0ms' : '200ms',
+    '--stage-hold-ms': `${HOLD_MS - HOLD_HINT_MS}ms`,
   } as React.CSSProperties;
 
-  const lastEntry = index === entries.length - 1;
+  const lastEntry = current === entries.length - 1;
   const atLastPage = mode === 'paged' ? page.current >= page.total - 1 : atScrollEnd;
-  const showColumn = stage.showChordColumn && shapes.length > 0;
-  const btn =
-    'flex size-12 items-center justify-center rounded-full bg-white/10 text-current backdrop-blur active:bg-white/25';
-  const modeLabel =
-    mode === 'paged' ? 'páginas' : mode === 'autoscroll' ? 'rolagem automática' : 'híbrido';
+  const changed = st !== entry.baseSemitones;
+  const bigBtn =
+    'flex size-20 shrink-0 items-center justify-center rounded-2xl bg-white/10 text-white active:bg-white/25 disabled:opacity-30';
 
   return (
-    <div className="stage fixed inset-0 flex flex-col" style={stageVars}>
+    <div
+      className="stage fixed inset-0 flex flex-col"
+      style={stageVars}
+      onContextMenu={(e) => e.preventDefault()}
+    >
       {/* cabeçalho mínimo */}
       <header className="flex shrink-0 items-baseline gap-3 px-4 pt-[max(0.5rem,env(safe-area-inset-top))] pb-1 text-sm opacity-80">
         {entries.length > 1 && (
           <span className="tabular-nums opacity-70">
-            {index + 1}/{entries.length}
+            {current + 1}/{entries.length}
           </span>
         )}
         <span className="min-w-0 flex-1 truncate font-semibold">
@@ -351,44 +372,29 @@ export default function Palco() {
         </div>
       )}
 
-      <div className="flex min-h-0 flex-1 gap-4 px-4 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
-        <div className="min-w-0 flex-1">
-          <StageContent
-            ref={content}
-            doc={display.doc}
-            stage={stage}
-            mode={mode}
-            playing={playing}
-            speed={speed}
-            startDelay={stage.scrollStartDelay}
-            startAtEnd={startAtEnd}
-            onTap={onTap}
-            onBoundary={onBoundary}
-            onPageChange={onPageChange}
-            onScrollEnd={setAtScrollEnd}
-            onScrollableHeight={setScrollable}
-          />
-        </div>
-        {showColumn && (
-          <aside className="hidden w-28 shrink-0 overflow-y-auto sm:block" aria-label="Acordes">
-            <ChordStrip
-              shapes={shapes}
-              instrument={instrument}
-              lefty={stage.lefty}
-              direction="column"
-              size={88}
-              onCycle={(name, next) =>
-                void saveSong(db, {
-                  id: song.id,
-                  chordPrefs: {
-                    ...song.chordPrefs,
-                    [instrument]: { ...(song.chordPrefs[instrument] ?? {}), [name]: next },
-                  },
-                })
-              }
-            />
-          </aside>
-        )}
+      <div
+        className="min-h-0 flex-1 px-4 pb-[max(0.5rem,env(safe-area-inset-bottom))]"
+        onPointerDownCapture={onHoldStart}
+        onPointerMoveCapture={onHoldMove}
+        onPointerUpCapture={cancelHold}
+        onPointerCancelCapture={cancelHold}
+        onPointerLeave={cancelHold}
+      >
+        <StageContent
+          ref={content}
+          doc={display.doc}
+          stage={stage}
+          mode={mode}
+          playing={playing}
+          speed={speed}
+          startDelay={stage.scrollStartDelay}
+          startAtEnd={startAtEnd}
+          onTap={onTap}
+          onBoundary={onBoundary}
+          onPageChange={onPageChange}
+          onScrollEnd={setAtScrollEnd}
+          onScrollableHeight={setScrollable}
+        />
       </div>
 
       {/* avisos */}
@@ -404,259 +410,135 @@ export default function Palco() {
           </span>
         )}
       </div>
-      {pendingSave && (
-        <div className="absolute inset-x-4 top-12 mx-auto flex max-w-md items-center gap-3 rounded-xl bg-black/80 p-3 text-sm text-white">
-          <span className="flex-1">Salvar o novo tom de “{pendingSave.title}” no repertório?</span>
-          <button
-            type="button"
-            className="rounded-lg bg-white/20 px-3 py-2"
-            onClick={() => {
-              void updateSetlistItem(db, pendingSave.itemId, { transpose: pendingSave.semitones });
-              setPendingSave(null);
-            }}
-          >
-            Salvar
-          </button>
-          <button
-            type="button"
-            className="px-2 py-2 opacity-70"
-            onClick={() => setPendingSave(null)}
-          >
-            Não
-          </button>
-        </div>
-      )}
 
-      {/* acordes em tela estreita */}
-      {chordsOpen && shapes.length > 0 && (
-        <div className="absolute inset-x-0 bottom-24 bg-black/70 px-3 py-2 sm:hidden">
-          <ChordStrip shapes={shapes} instrument={instrument} lefty={stage.lefty} size={70} />
-        </div>
-      )}
-
-      {/* barra de controles */}
-      {controls && (
-        <div
-          className="absolute inset-x-0 bottom-0 flex flex-wrap items-center justify-center gap-2 bg-gradient-to-t from-black/80 to-transparent px-3 pt-8 pb-[max(1rem,env(safe-area-inset-bottom))] text-white"
-          onPointerDown={showControls}
-        >
-          <button type="button" className={btn} aria-label="Sair" onClick={exit}>
-            <X className="size-5" />
-          </button>
-          {entries.length > 1 && (
-            <button
-              type="button"
-              className={btn}
-              aria-label="Música anterior"
-              onClick={() => goTo(index - 1)}
-            >
-              <ChevronLeft className="size-5" />
-            </button>
-          )}
-          <div className="flex items-center gap-1 rounded-full bg-white/10 px-1">
-            <button
-              type="button"
-              className={btn}
-              aria-label="Meio tom abaixo"
-              onClick={() => transpose(-1)}
-            >
-              <Minus className="size-4" />
-            </button>
-            <button
-              type="button"
-              className="min-w-10 font-mono font-bold"
-              aria-label="Voltar ao tom salvo"
-              onClick={() => transpose(0)}
-            >
-              {keyLabel(display.soundingKey)}
-            </button>
-            <button
-              type="button"
-              className={btn}
-              aria-label="Meio tom acima"
-              onClick={() => transpose(1)}
-            >
-              <Plus className="size-4" />
-            </button>
-          </div>
-          <button
-            type="button"
-            className={btn}
-            aria-label={`Modo: ${modeLabel}`}
-            title={`Modo: ${modeLabel} (toque para trocar)`}
-            onClick={() => {
-              setPlaying(false);
-              setMode((m) =>
-                m === 'paged' ? 'autoscroll' : m === 'autoscroll' ? 'hybrid' : 'paged',
-              );
-            }}
-          >
-            <Rows3 className="size-5" />
-          </button>
-          {mode !== 'paged' && (
-            <div className="flex items-center gap-1 rounded-full bg-white/10 px-1">
-              <button
-                type="button"
-                className={btn}
-                aria-label="Mais devagar"
-                onClick={() => changeSpeed(1 / 1.15)}
-              >
-                <Minus className="size-4" />
-              </button>
-              <button
-                type="button"
-                className={btn}
-                aria-label={playing ? 'Pausar' : 'Rolar'}
-                onClick={() => setPlaying((p) => !p)}
-              >
-                {playing ? <Pause className="size-5" /> : <Play className="size-5" />}
-              </button>
-              <button
-                type="button"
-                className={btn}
-                aria-label="Mais rápido"
-                onClick={() => changeSpeed(1.15)}
-              >
-                <Plus className="size-4" />
-              </button>
+      {/* segurando o dedo: progresso até abrir o menu */}
+      {holding && (
+        <div className="pointer-events-none absolute inset-x-0 bottom-[max(2rem,env(safe-area-inset-bottom))] flex justify-center">
+          <div className="w-64 rounded-2xl bg-neutral-900 px-4 py-3 text-center text-sm text-white shadow-xl">
+            Continue segurando para abrir o menu
+            <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-white/15">
+              <div className="stage-hold-fill h-full rounded-full bg-white" />
             </div>
-          )}
-          {shapes.length > 0 && (
-            <button
-              type="button"
-              className={`${btn} sm:hidden`}
-              aria-label="Acordes"
-              onClick={() => setChordsOpen((o) => !o)}
-            >
-              <Guitar className="size-5" />
-            </button>
-          )}
-          {isSetlist && (
-            <button
-              type="button"
-              className={btn}
-              aria-label="Repertório"
-              onClick={() => setDrawer(true)}
-            >
-              <ListMusic className="size-5" />
-            </button>
-          )}
-          <button
-            type="button"
-            className={btn}
-            aria-label="Tela cheia"
-            onClick={() => void platform().setFullscreen(!platform().isFullscreen())}
-          >
-            <Maximize className="size-5" />
-          </button>
-          {entries.length > 1 && (
-            <button
-              type="button"
-              className={btn}
-              aria-label="Próxima música"
-              onClick={() => goTo(index + 1)}
-            >
-              <ChevronRight className="size-5" />
-            </button>
-          )}
+          </div>
         </div>
       )}
 
-      {/* gaveta do repertório */}
-      {drawer && (
-        <div className="absolute inset-0 z-30 flex justify-end">
+      {/* menu do palco: só o tom */}
+      {menu && (
+        <div className="absolute inset-0 z-40 flex items-end justify-center sm:items-center">
           <button
             type="button"
-            aria-label="Fechar repertório"
-            className="absolute inset-0 bg-black/50"
-            onClick={() => setDrawer(false)}
+            aria-label="Fechar menu"
+            className="absolute inset-0 bg-black/85"
+            onClick={() => setMenu(false)}
           />
-          <aside
+          <div
             role="dialog"
             aria-modal="true"
-            aria-label="Repertório"
-            className="relative flex h-full w-full max-w-sm flex-col bg-neutral-900 text-white"
+            aria-labelledby="palco-menu-titulo"
+            className="relative w-full max-w-md rounded-t-3xl bg-neutral-900 px-6 pt-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] text-white shadow-2xl sm:rounded-3xl"
           >
-            <div className="flex items-center justify-between px-4 py-3">
-              <h2 className="font-semibold">{setlist?.name}</h2>
+            <p className="truncate text-sm text-white/60">{song.title}</p>
+            <h2 id="palco-menu-titulo" className="mb-6 text-xl font-semibold">
+              Tom
+            </h2>
+
+            <div className="flex items-center justify-between gap-4">
               <button
                 type="button"
-                aria-label="Fechar"
-                className="p-2"
-                onClick={() => setDrawer(false)}
+                className={bigBtn}
+                aria-label="Meio tom abaixo"
+                onClick={() => {
+                  transpose(-1);
+                  setSaved(false);
+                }}
               >
-                <X className="size-5" />
+                <Minus className="size-8" />
+              </button>
+              <div className="min-w-0 text-center">
+                <div className="font-mono text-6xl font-bold" style={{ color: colors.chord }}>
+                  {keyLabel(display.soundingKey)}
+                </div>
+                <div className="mt-1 text-sm text-white/60">
+                  {semitoneLabel(st)}
+                  {originalKey?.soundingKey && st !== 0 && (
+                    <> · original {keyLabel(originalKey.soundingKey)}</>
+                  )}
+                </div>
+              </div>
+              <button
+                type="button"
+                className={bigBtn}
+                aria-label="Meio tom acima"
+                onClick={() => {
+                  transpose(1);
+                  setSaved(false);
+                }}
+              >
+                <Plus className="size-8" />
               </button>
             </div>
-            <ol className="flex-1 overflow-y-auto">
-              {entries.map((e, i) => {
-                const s = songs.get(e.songId);
-                return (
-                  <li key={e.key}>
-                    {e.momentBefore && (
-                      <div className="px-4 pt-3 text-xs tracking-wide uppercase opacity-60">
-                        {e.momentBefore}
-                      </div>
-                    )}
-                    <button
-                      type="button"
-                      className={`flex min-h-12 w-full items-center gap-3 px-4 text-left ${
-                        i === index ? 'bg-white/15 font-semibold' : 'hover:bg-white/10'
-                      }`}
-                      onClick={() => {
-                        goTo(i);
-                        setDrawer(false);
-                      }}
-                    >
-                      <span className="w-6 text-right text-sm opacity-60">{i + 1}</span>
-                      <span className="flex-1 truncate">{s?.title}</span>
-                      {e.provisional && <span className="text-xs opacity-60">provisória</span>}
-                    </button>
-                  </li>
-                );
-              })}
-            </ol>
-            <div className="border-t border-white/10 p-3">
-              <input
-                type="search"
-                placeholder="Adicionar música provisória…"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="min-h-11 w-full rounded-lg bg-white/10 px-3 text-sm placeholder:text-white/50"
-              />
-              {search.trim() && (
-                <ul className="mt-2 max-h-48 overflow-y-auto">
-                  {(found ?? []).slice(0, 20).map((s) => (
-                    <li key={s.id}>
-                      <button
-                        type="button"
-                        className="flex min-h-11 w-full items-center gap-2 px-2 text-left text-sm hover:bg-white/10"
-                        onClick={() => {
-                          setProvisional((p) => [
-                            ...p,
-                            {
-                              after: entry.key,
-                              entry: {
-                                key: `prov-${s.id}-${Date.now()}`,
-                                songId: s.id,
-                                itemId: null,
-                                baseSemitones: s.transpose,
-                                provisional: true,
-                              },
-                            },
-                          ]);
-                          setSearch('');
-                        }}
-                      >
-                        <Plus className="size-4" />
-                        <span className="truncate">{s.title}</span>
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              )}
+
+            {changed && !saved && (
+              <div className="mt-6">
+                <p className="mb-2 text-sm text-white/60">Usar este tom:</p>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    className="flex min-h-16 flex-col items-start justify-center rounded-2xl border-2 border-white bg-white/10 px-4 py-2 text-left"
+                    onClick={() => setMenu(false)}
+                  >
+                    <span className="font-semibold">Só agora</span>
+                    <span className="text-xs text-white/60">
+                      até fechar o {isSetlist ? 'repertório' : 'palco'}
+                    </span>
+                  </button>
+                  <button
+                    type="button"
+                    disabled={!canSaveToSong}
+                    className="flex min-h-16 flex-col items-start justify-center rounded-2xl border-2 border-white/20 px-4 py-2 text-left active:bg-white/10 disabled:opacity-40"
+                    onClick={() => void saveKeyToSong()}
+                  >
+                    <span className="font-semibold">Salvar na música</span>
+                    <span className="text-xs text-white/60">
+                      {canSaveToSong ? 'vale nas próximas vezes' : 'a música é de outra pessoa'}
+                    </span>
+                  </button>
+                </div>
+              </div>
+            )}
+            {saved && (
+              <p className="mt-6 flex items-center gap-2 text-sm text-white/80" role="status">
+                <Check className="size-4" /> Tom salvo na música.
+              </p>
+            )}
+            {changed && (
+              <button
+                type="button"
+                className="mt-4 flex min-h-11 items-center gap-2 text-sm text-white/70"
+                onClick={() => transpose(0)}
+              >
+                <RotateCcw className="size-4" /> Voltar ao tom salvo
+              </button>
+            )}
+
+            <div className="mt-6 grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                className="flex min-h-14 items-center justify-center gap-2 rounded-2xl bg-white/10 active:bg-white/20"
+                onClick={exit}
+              >
+                <LogOut className="size-5" /> Sair do palco
+              </button>
+              <button
+                type="button"
+                className="min-h-14 rounded-2xl bg-white font-semibold text-black active:bg-white/80"
+                onClick={() => setMenu(false)}
+              >
+                Fechar
+              </button>
             </div>
-          </aside>
+          </div>
         </div>
       )}
     </div>

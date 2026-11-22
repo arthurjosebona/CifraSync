@@ -1,4 +1,4 @@
-import { INSTRUMENTS, parseSong } from '@cifrasync/core';
+import { parseSong } from '@cifrasync/core';
 import {
   NAMED_FONT_SIZES,
   STAGE_PRESETS,
@@ -15,7 +15,7 @@ import { Page } from '../components/Page';
 import { SongView } from '../components/SongView';
 import { Button, Field, Select } from '../components/ui';
 import { useSettings } from '../lib/data';
-import { updateSettings } from '../lib/settings';
+import { replaceSettings, updateSettings } from '../lib/settings';
 import { useTheme, type ThemePreference } from '../lib/theme';
 
 const SAMPLE = parseSong(`[Refrão]
@@ -116,14 +116,13 @@ const THEMES: { value: ThemePreference; label: string }[] = [
 
 export default function Configuracoes() {
   const { preference, setPreference } = useTheme();
-  const { settings, global, device } = useSettings();
+  const { settings, device } = useSettings();
   const [scope, setScope] = useState<'global' | 'device'>('global');
   const stage = settings.stage;
 
-  const set = (patch: Partial<Stage>) =>
-    void updateSettings(scope === 'device' ? device : global, { stage: patch }, scope);
+  const set = (patch: Partial<Stage>) => void updateSettings({ stage: patch }, scope);
   const setColors = (patch: Partial<StageColors>) =>
-    void updateSettings(scope === 'device' ? device : global, { stage: { colors: patch } }, scope);
+    void updateSettings({ stage: { colors: patch } }, scope);
 
   const previewVars = useMemo(
     () =>
@@ -195,7 +194,7 @@ export default function Configuracoes() {
             {Object.keys(device).length > 0 && (
               <Button
                 variant="ghost"
-                onClick={() => void updateSettings({}, {}, 'device')}
+                onClick={() => void replaceSettings({}, 'device')}
                 title="Volta a usar as configurações da conta neste aparelho"
               >
                 Limpar ajustes deste aparelho
@@ -352,11 +351,6 @@ export default function Configuracoes() {
             </Select>
           </Field>
           <Toggle
-            label="Coluna de acordes"
-            checked={stage.showChordColumn}
-            onChange={(showChordColumn) => set({ showChordColumn })}
-          />
-          <Toggle
             label="Faixa de referência no meio da tela"
             checked={stage.referenceBand}
             onChange={(referenceBand) => set({ referenceBand })}
@@ -400,27 +394,6 @@ export default function Configuracoes() {
         </Section>
 
         <Section title="Acordes">
-          <Field label="Instrumento dos diagramas">
-            <Select
-              value={stage.instrument}
-              onChange={(e) => set({ instrument: e.target.value as Stage['instrument'] })}
-            >
-              {Object.values(INSTRUMENTS).map((i) => (
-                <option key={i.id} value={i.id}>
-                  {i.name}
-                </option>
-              ))}
-            </Select>
-          </Field>
-          <Field label="Mão">
-            <Select
-              value={stage.lefty ? 'c' : 'd'}
-              onChange={(e) => set({ lefty: e.target.value === 'c' })}
-            >
-              <option value="d">Destro</option>
-              <option value="c">Canhoto</option>
-            </Select>
-          </Field>
           <Field label="Escrita dos acordes">
             <Select
               value={stage.chordStyle}
@@ -438,11 +411,7 @@ export default function Configuracoes() {
             variant="danger"
             onClick={() => {
               if (confirm('Restaurar todas as configurações do palco para o padrão?'))
-                void updateSettings(
-                  scope === 'device' ? device : global,
-                  { stage: StageSettings.parse({}) },
-                  scope,
-                );
+                void updateSettings({ stage: StageSettings.parse({}) }, scope);
             }}
           >
             Restaurar padrões do palco
