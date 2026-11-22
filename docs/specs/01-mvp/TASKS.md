@@ -344,7 +344,7 @@ Incluir no CI.
 
 ### [x] T48: API base e autenticação
 **Fazer:**
-- entrada `api/[[...route]].ts` com app Hono;
+- entrada `api/index.ts` (rewrite de `/api/*` no vercel.json) com app Hono;
 - Better Auth (e-mail/senha, plugins `username` e `bearer`, sessão de 60 dias);
 - CORS restrito às origens do Tauri e do Capacitor;
 - rota `health`, tratamento de erros e rate limit simples.
