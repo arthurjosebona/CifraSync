@@ -17,6 +17,8 @@ export interface CifraEditorApi {
   wrapLines(open: string, close: string): void;
   /** Envolve um trecho de uma linha com "((…))" (2ª voz). Sem seleção, envolve as linhas em {voz2}. */
   markVoice2(): void;
+  /** Insere um título de seção (ex.: "[Introdução]") acima da linha do cursor. */
+  insertHeader(title: string): void;
   /** Envolve as linhas [from, to] (base 0) com marcações. */
   wrapLineRange(from: number, to: number, open: string, close: string): void;
   /** Formata o texto inteiro. */
@@ -178,6 +180,12 @@ export const CifraEditor = forwardRef<
     };
     return {
       wrapLineRange,
+      insertHeader(title) {
+        const v = view.current!;
+        const line = v.state.doc.lineAt(v.state.selection.main.from);
+        v.dispatch({ changes: { from: line.from, insert: `[${title}]\n` } });
+        v.focus();
+      },
       wrapLines(open, close) {
         const v = view.current!;
         const sel = v.state.selection.main;
