@@ -5,7 +5,7 @@ import { createApp } from './app.js';
 import { createAuth } from './auth.js';
 import { createDb, migrateDb } from './db/client.js';
 
-export async function createTestApi() {
+export async function createTestApi(opts: { adminUsernames?: string[] } = {}) {
   const handle = await createDb('pglite:memory');
   await migrateDb(handle);
   const baseURL = 'http://localhost:5173';
@@ -13,7 +13,12 @@ export async function createTestApi() {
     secret: 'segredo-de-teste-com-tamanho-suficiente-000',
     baseURL,
   });
-  const app = createApp({ db: handle.db, auth, webOrigins: [baseURL] });
+  const app = createApp({
+    db: handle.db,
+    auth,
+    webOrigins: [baseURL],
+    adminUsernames: opts.adminUsernames ?? [],
+  });
 
   const call = async (
     path: string,

@@ -23,3 +23,5 @@ Registro dos pedidos feitos à IA, em ordem, para manter a rastreabilidade de co
 | [0008](0008-repo-publico-release-e-fase-2.md) | 2026-11-20 | Implementação | 01-mvp | Release 0.1.0, correção do CI e Fase 2 (SPA local) |
 | [0009](0009-construir-tudo-antes-de-testar.md) | 2026-11-20 | Implementação | 01-mvp | Construir a aplicação completa e testar depois do deploy |
 | [0010](0010-fases-3-a-8.md) | 2026-11-20 | Implementação | 01-mvp | Fases 3 a 8: palco, servidor e sync, grupos, desktop, Android e polimento |
+| [0011](0011-primeiro-deploy-e-hotfix.md) | 2026-11-22 | Implementação | 01-mvp | Primeiro deploy, release 0.3.0 e hotfix 0.3.1 das rotas da API |
+| [0012](0012-contas-sem-email-e-admin.md) | 2026-11-22 | SPEC → implementação | 02-contas-e-administracao | Cadastro sem e-mail, troca de senha e administração |

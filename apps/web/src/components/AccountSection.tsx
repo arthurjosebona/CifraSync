@@ -1,8 +1,10 @@
-import { LogOut, RefreshCw, Trash2, UserRound } from 'lucide-react';
+import { isInternalEmail } from '@cifrasync/shared';
+import { KeyRound, LogOut, RefreshCw, ShieldCheck, Trash2, UserRound } from 'lucide-react';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 
-import { deleteAccount, signOut, useAccount } from '../lib/account';
+import { deleteAccount, signOut, useAccount, useAccountStatus } from '../lib/account';
+import { ChangePasswordForm } from './ChangePassword';
 import { syncEngine, useSyncState } from '../lib/sync';
 import { SyncIndicator } from './SyncIndicator';
 import { Button } from './ui';
@@ -12,6 +14,9 @@ export function AccountSection() {
   const sync = useSyncState();
   const navigate = useNavigate();
   const [busy, setBusy] = useState(false);
+  const status = useAccountStatus();
+  const [changing, setChanging] = useState(false);
+  const [changed, setChanged] = useState(false);
 
   if (account === undefined) return null;
 
@@ -37,7 +42,8 @@ export function AccountSection() {
             <div className="min-w-0 flex-1">
               <div className="truncate font-medium">{account.name}</div>
               <div className="truncate text-sm text-muted">
-                @{account.username} · {account.email}
+                @{account.username}
+                {!isInternalEmail(account.email) && ` · ${account.email}`}
               </div>
             </div>
             <SyncIndicator />
@@ -51,11 +57,47 @@ export function AccountSection() {
               para voltar a sincronizar — nada do que está neste aparelho se perde.
             </p>
           )}
+          {changing && (
+            <div className="rounded-lg border border-border p-3">
+              <ChangePasswordForm
+                onDone={() => {
+                  setChanging(false);
+                  setChanged(true);
+                }}
+                onCancel={() => setChanging(false)}
+              />
+            </div>
+          )}
+          {changed && !changing && (
+            <p role="status" className="text-sm text-muted">
+              Senha trocada.
+            </p>
+          )}
           <div className="flex flex-wrap gap-2">
             <Button onClick={() => void syncEngine.sync()}>
               <RefreshCw className="size-4" aria-hidden />
               Sincronizar agora
             </Button>
+            {!changing && (
+              <Button
+                onClick={() => {
+                  setChanging(true);
+                  setChanged(false);
+                }}
+              >
+                <KeyRound className="size-4" aria-hidden />
+                Trocar senha
+              </Button>
+            )}
+            {status?.isAdmin && (
+              <Link
+                to="/admin"
+                className="inline-flex min-h-11 items-center gap-2 rounded-lg border border-border bg-surface px-4 text-sm font-medium hover:bg-surface-2"
+              >
+                <ShieldCheck className="size-4" aria-hidden />
+                Administração
+              </Link>
+            )}
             <Button
               onClick={async () => {
                 const pending = syncEngine.getState().pending;

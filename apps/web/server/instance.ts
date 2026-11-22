@@ -1,6 +1,8 @@
 /**
  * Instância única da API por processo (reaproveitada entre invocações na Vercel).
  */
+import { parseAdminUsernames } from '@cifrasync/shared';
+
 import { createApp } from './app.js';
 import { createAuth } from './auth.js';
 import { createDb, migrateDb } from './db/client.js';
@@ -39,7 +41,12 @@ export function getApp() {
       baseURL,
       extraOrigins: webOrigins,
     });
-    return createApp({ db: handle.db, auth, webOrigins });
+    return createApp({
+      db: handle.db,
+      auth,
+      webOrigins,
+      adminUsernames: parseAdminUsernames(process.env.ADMIN_USERNAMES),
+    });
   })();
   return app;
 }
