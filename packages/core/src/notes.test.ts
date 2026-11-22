@@ -74,6 +74,10 @@ describe('tons', () => {
     ['Dm', 'flats'],
     ['Em', 'sharps'],
     ['Am', 'default'],
+    // mesma nota, grafias diferentes: o nome do tom decide
+    ['F#', 'sharps'],
+    ['Gb', 'flats'],
+    ['C#m', 'sharps'],
   ])('tom %s usa grafia %s', (k, spelling) => {
     expect(spellingForKey(parseKey(k)!)).toBe(spelling);
   });

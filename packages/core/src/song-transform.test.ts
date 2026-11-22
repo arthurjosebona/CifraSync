@@ -73,6 +73,9 @@ describe('detectKey', () => {
     ['F Bb C7 F', 'F'],
     ['E B C#m A E', 'E'],
     ['Bb Gm Eb F7 Bb', 'Bb'],
+    // trecho que termina na dominante: B7 é o V de E, não a tônica
+    ['E B7 E B7', 'E'],
+    ['E B7', 'E'],
   ])('%s → %s', (line, key) => {
     const guess = detectKey(parseSong(line));
     expect(guess && formatKey(guess.key)).toBe(key);
