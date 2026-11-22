@@ -43,7 +43,7 @@ export default function Palco() {
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const isSetlist = pathname.startsWith('/palco/repertorio');
-  const { settings } = useSettings();
+  const { settings, loaded: settingsLoaded } = useSettings();
   const stage = settings.stage;
   const myId = useMyId();
 
@@ -302,7 +302,8 @@ export default function Palco() {
   // ------------------------------------------------------------ render
   const loading =
     (isSetlist ? setlist === undefined || items === undefined : single === undefined) ||
-    allSongs === undefined;
+    allSongs === undefined ||
+    !settingsLoaded;
   if (loading) return <div className="stage h-full" />;
   if (!entry || !display || !song) {
     return (

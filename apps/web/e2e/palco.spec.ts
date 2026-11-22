@@ -106,6 +106,7 @@ test('no modo híbrido, rolar à mão não desliga a rolagem automática', async
   await page.getByLabel('Modo padrão').selectOption('hybrid');
   await expect(page.getByLabel('Modo padrão')).toHaveValue('hybrid');
   await page.goto(`/palco/musica/${id}`);
+  await expect(page.locator('header').getByText('Híbrida')).toBeVisible();
   await page.keyboard.press('p');
 
   const scroller = page.locator('.stage .overflow-y-auto.song');
