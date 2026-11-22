@@ -207,6 +207,12 @@ export default function Editor() {
       </div>
 
       <div className="mb-2 flex flex-wrap gap-1">
+        <Button
+          title="Marca o início da música (a parte só com acordes) — insere o título acima da linha do cursor"
+          onClick={() => editor.current?.insertHeader('Introdução')}
+        >
+          Introdução
+        </Button>
         {MARKS.slice(0, 3).map((m) => (
           <Button
             key={m.label}
@@ -296,7 +302,12 @@ export default function Editor() {
             ref={editor}
             value={form.content}
             onChange={(v) => set('content', v)}
-            onPasteFormatted={setReport}
+            onPasteFormatted={(r) => {
+              setReport(r);
+              // "Tom: E" no texto colado preenche o campo Tom, se ainda estiver vazio
+              const pastedKey = r.key;
+              if (pastedKey) setForm((f) => (f.key ? f : { ...f, key: pastedKey }));
+            }}
             onSave={() => void save()}
           />
           <p className="mt-1 text-xs text-muted">

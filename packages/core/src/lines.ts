@@ -57,6 +57,9 @@ const LABEL_PREFIX_RE = new RegExp(
   'i',
 );
 
+/** Rótulo entre colchetes seguido de acordes na mesma linha: "[Intro] E  B7  E". */
+const BRACKET_LABEL_RE = /^(\s*\[([^\]]+)\]\s+)(?=\S)/;
+
 /** Tokens que podem aparecer numa linha de cifra sem ser acorde nem palavra. */
 const SYMBOL_RE =
   /^(\|+|:?\|\|?:?|%|-+|–|—|\.{2,}|\/|x\d+|\d+x|\(x?\d+x?\)|\*+|>|N\.?C\.?|\(|\))$/i;
@@ -104,7 +107,10 @@ export function analyzeChordLine(line: string): ChordLineAnalysis {
   let chordCount = 0;
   let wordCount = 0;
 
-  const label = LABEL_PREFIX_RE.exec(line);
+  // "[Intro] E B7 E" ou "Intro: E B7 E": o rótulo no começo não é acorde
+  const bracket = BRACKET_LABEL_RE.exec(line);
+  const label =
+    LABEL_PREFIX_RE.exec(line) ?? (bracket && !parseChord(bracket[2]!.trim()) ? bracket : null);
   if (label) {
     const raw = label[1]!.trim();
     tokens.push({ col: line.indexOf(raw), raw, chord: null, pre: '', post: '' });
@@ -132,6 +138,18 @@ export function analyzeChordLine(line: string): ChordLineAnalysis {
 }
 
 const TAB_START_RE = /^\s*[eBGDAEbgda]\s*[|:]/;
+
+/**
+ * Linha com cara de tablatura, mesmo curta ("E|---|", "G|---| (4x)"). Sozinha não basta:
+ * o formatador só a trata como tablatura num bloco de várias linhas seguidas.
+ */
+export function isShortTabLine(line: string): boolean {
+  if (!TAB_START_RE.test(line)) return false;
+  const body = line.replace(TAB_START_RE, '').trim();
+  if (!body) return false;
+  const tabChars = body.replace(/[^-|0-9hpbrx/\\~^.()*]/g, '').length;
+  return tabChars >= 2 && tabChars / body.replace(/\s/g, '').length >= 0.6;
+}
 
 export function isTabLine(line: string): boolean {
   if (!TAB_START_RE.test(line)) return false;

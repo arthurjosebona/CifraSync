@@ -28,7 +28,8 @@ Uma pasta numerada por feature, seguindo os templates de [`processo/sdd/template
 
 | Pasta | Feature | Etapa |
 |---|---|---|
-| [01-mvp](specs/01-mvp/SPEC.md) | Produto inicial (MVP multiplataforma) | Implementado · [PLAN](specs/01-mvp/PLAN.md) · [TASKS](specs/01-mvp/TASKS.md) · [verificação](specs/01-mvp/VERIFICACAO.md) (testes do autor pendentes) |
+| [01-mvp](specs/01-mvp/SPEC.md) | Produto inicial (MVP multiplataforma) | Implementado · [PLAN](specs/01-mvp/PLAN.md) · [TASKS](specs/01-mvp/TASKS.md) · [verificação](specs/01-mvp/VERIFICACAO.md) · [ajustes até a v1.0](specs/01-mvp/AJUSTES.md) |
+| [02-contas-e-administracao](specs/02-contas-e-administracao/SPEC.md) | Cadastro sem e-mail, troca de senha e administração | Implementado · [PLAN](specs/02-contas-e-administracao/PLAN.md) · [TASKS](specs/02-contas-e-administracao/TASKS.md) |
 
 ## `prompts/`
 

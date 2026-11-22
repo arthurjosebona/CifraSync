@@ -119,6 +119,12 @@ export function detectKey(doc: SongDoc): KeyGuess | null {
   const first = chords[0]!;
   const last = chords[chords.length - 1]!;
 
+  // Acorde de sétima dominante (ex.: B7) quase sempre é o V do tom (E), não o repouso:
+  // reforça o tom uma quarta acima e não conta como tônica no começo nem no fim.
+  const isDominant = (c: Chord) => c.quality === 'major' && c.seventh === '7';
+  const restsOn = (c: Chord, tonic: number, fam: Family) =>
+    c.root.pc === tonic && family(c) === fam && !isDominant(c);
+
   let best: { key: Key; score: number } | null = null;
   for (let tonic = 0; tonic < 12; tonic++) {
     for (const minor of [false, true]) {
@@ -128,10 +134,11 @@ export function detectKey(doc: SongDoc): KeyGuess | null {
         const f = family(c);
         const iv = mod12(c.root.pc - tonic);
         if (degrees.some(([d, fam]) => d === iv && fam === f)) score += 1;
+        if (isDominant(c) && iv === 7) score += 0.5;
       }
       const tonicFamily: Family = minor ? 'min' : 'maj';
-      if (first.root.pc === tonic && family(first) === tonicFamily) score += chords.length * 0.15;
-      if (last.root.pc === tonic && family(last) === tonicFamily) score += chords.length * 0.25;
+      if (restsOn(first, tonic, tonicFamily)) score += chords.length * 0.15;
+      if (restsOn(last, tonic, tonicFamily)) score += chords.length * 0.25;
       if (!best || score > best.score) best = { key: keyFromPc(tonic, minor), score };
     }
   }

@@ -4,21 +4,16 @@
  */
 import {
   applyCapo,
-  chordsUsed,
   detectKey,
   formatKey,
-  getVoicings,
-  parseChord,
   parseKey,
   parseSong,
   shapesKey,
   transposeDoc,
   transposeKey,
-  type InstrumentId,
   type Key,
   type SongDoc,
   type Spelling,
-  type Voicing,
 } from '@cifrasync/core';
 import type { Song } from '@cifrasync/shared';
 
@@ -82,27 +77,4 @@ export function keyOptions(written: Key | null): { semitones: number; label: str
     const n = i <= 6 ? i : i - 12; // de -5 a +6
     return { semitones: n, label: formatKey(transposeKey(written, n)) };
   }).sort((a, b) => a.semitones - b.semitones);
-}
-
-export interface ChordShape {
-  name: string;
-  voicings: Voicing[];
-  /** Índice da posição a exibir (preferência salva ou 0). */
-  index: number;
-}
-
-/** Acordes usados na música com as posições do instrumento escolhido. */
-export function chordShapes(
-  doc: SongDoc,
-  instrument: InstrumentId,
-  prefs: Record<string, number> = {},
-): ChordShape[] {
-  return chordsUsed(doc).flatMap((name) => {
-    const chord = parseChord(name);
-    if (!chord) return [];
-    const voicings = getVoicings(chord, instrument);
-    if (!voicings.length) return [];
-    const pref = prefs[name] ?? 0;
-    return [{ name, voicings, index: pref < voicings.length ? pref : 0 }];
-  });
 }

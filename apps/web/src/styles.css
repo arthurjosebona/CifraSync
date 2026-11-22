@@ -199,6 +199,21 @@ body {
   color: var(--song-lyric);
   touch-action: manipulation;
   user-select: none;
+  /* segurar o dedo abre o menu do palco, não o menu de copiar/compartilhar do sistema */
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+}
+/* barra que enche enquanto o dedo segura para abrir o menu do palco */
+.stage-hold-fill {
+  animation: stage-hold-fill var(--stage-hold-ms, 2600ms) linear forwards;
+}
+@keyframes stage-hold-fill {
+  from {
+    width: 0%;
+  }
+  to {
+    width: 100%;
+  }
 }
 .stage-page-enter-slide-next {
   animation: stage-slide-next var(--stage-transition, 200ms) ease-out;

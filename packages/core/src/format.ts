@@ -2,7 +2,16 @@
  * Formatação automática da cifra colada pelo usuário (RF-02).
  */
 import { parseChord } from './chords';
-import { analyzeChordLine, classifyLine, headerTitle, type LineKind } from './lines';
+import {
+  analyzeChordLine,
+  classifyLine,
+  headerTitle,
+  isShortTabLine,
+  type LineKind,
+} from './lines';
+
+/** "Tom: E", "Tom:  Am" — o tom informado no topo das cifras da internet. */
+const TOM_LINE_RE = /^\s*tom\s*:\s*([A-G][#b]?m?)\s*$/i;
 
 export interface FormatOptions {
   /** Largura de tabulação usada para converter \t em espaços. Padrão 8. */
@@ -24,6 +33,8 @@ export interface ChorusSuggestion {
 
 export interface FormatReport {
   counts: Record<'chords' | 'lyric' | 'tab' | 'header' | 'comment', number>;
+  /** Tom informado numa linha "Tom: E" do texto colado (a linha é removida). */
+  key?: string;
   unknown: UnknownToken[];
   chorusSuggestions: ChorusSuggestion[];
 }
@@ -99,6 +110,7 @@ export function autoFormat(
 
   // 1. Converte linhas ChordPro e agrupa tablaturas soltas em {tab}
   const out: string[] = [];
+  let key: string | undefined;
   let inTabDirective = false;
   for (let i = 0; i < src.length; i++) {
     const line = src[i]!;
@@ -108,7 +120,24 @@ export function autoFormat(
       out.push(line);
       continue;
     }
+    const tomLine = TOM_LINE_RE.exec(line);
+    if (tomLine && parseChord(tomLine[1]!)) {
+      key ??= tomLine[1]!;
+      // não deixa duas linhas vazias seguidas onde estava o "Tom:"
+      if (!src[i + 1]?.trim() && !out.at(-1)?.trim()) i++;
+      continue;
+    }
     const kind = classifyLine(line);
+    // bloco de tablatura curta (ex.: "E|---|" com "(4x)"): 3 ou mais linhas seguidas
+    if (kind !== 'tab' && isShortTabLine(line)) {
+      let j = i;
+      while (j < src.length && (isShortTabLine(src[j]!) || classifyLine(src[j]!) === 'tab')) j++;
+      if (j - i >= 3) {
+        out.push('{tab}', ...src.slice(i, j), '{/tab}');
+        i = j - 1;
+        continue;
+      }
+    }
     if (kind === 'tab') {
       out.push('{tab}');
       while (i < src.length && classifyLine(src[i]!) === 'tab') out.push(src[i++]!);
@@ -144,7 +173,12 @@ export function autoFormat(
 
   return {
     text: out.join('\n'),
-    report: { counts, unknown, chorusSuggestions: suggestChorus(out, kinds) },
+    report: {
+      counts,
+      unknown,
+      chorusSuggestions: suggestChorus(out, kinds),
+      ...(key ? { key } : {}),
+    },
   };
 }
 
