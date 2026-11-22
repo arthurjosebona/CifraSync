@@ -27,6 +27,7 @@ export const router = createBrowserRouter([
       { path: 'dicionario', element: page(() => import('./routes/Dicionario')) },
       { path: 'configuracoes', element: page(() => import('./routes/Configuracoes')) },
       { path: 'entrar', element: page(() => import('./routes/Login')) },
+      { path: 'admin', element: page(() => import('./routes/Admin')) },
       { path: '*', element: page(() => import('./routes/NaoEncontrado')) },
     ],
   },

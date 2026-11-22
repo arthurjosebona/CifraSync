@@ -1,6 +1,7 @@
 import { BookOpen, Guitar, ListMusic, Settings, Users } from 'lucide-react';
 import { NavLink, Outlet } from 'react-router';
 
+import { ChangePasswordGate } from './ChangePassword';
 import { SyncIndicator } from './SyncIndicator';
 
 const NAV = [
@@ -63,6 +64,7 @@ export function AppShell() {
           ))}
         </nav>
       </div>
+      <ChangePasswordGate />
     </div>
   );
 }

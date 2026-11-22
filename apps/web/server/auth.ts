@@ -1,9 +1,11 @@
 /**
- * Autenticação com Better Auth (ADR 0006): e-mail + senha, nome de usuário único e token
- * bearer para os apps nativos. Tabelas no próprio Postgres.
+ * Autenticação com Better Auth (ADR 0006): nome de usuário + senha (o e-mail é interno, ver
+ * docs/specs/02-contas-e-administracao) e token bearer para os apps nativos. Tabelas no próprio Postgres.
  */
 import { betterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
+import { APIError } from 'better-auth/api';
+import { eq } from 'drizzle-orm';
 import { bearer } from 'better-auth/plugins/bearer';
 import { username } from 'better-auth/plugins/username';
 
@@ -44,6 +46,24 @@ export function createAuth(db: Db, opts: AuthOptions) {
       // sessão longa: o músico não pode ser deslogado no dia do show sem internet
       expiresIn: 60 * 60 * 24 * 60,
       updateAge: 60 * 60 * 24,
+    },
+    databaseHooks: {
+      session: {
+        create: {
+          // conta desativada por um administrador não consegue entrar
+          before: async (s) => {
+            const [u] = await db
+              .select({ disabled: user.disabled })
+              .from(user)
+              .where(eq(user.id, s.userId));
+            if (u?.disabled)
+              throw new APIError('FORBIDDEN', {
+                code: 'ACCOUNT_DISABLED',
+                message: 'Conta desativada',
+              });
+          },
+        },
+      },
     },
     plugins: [username({ minUsernameLength: 3, maxUsernameLength: 30 }), bearer()],
     trustedOrigins: [...NATIVE_ORIGINS, ...(opts.extraOrigins ?? [])],
