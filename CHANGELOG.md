@@ -2,6 +2,12 @@
 
 Todas as mudanças relevantes do CifraSync. Gerado a partir dos Conventional Commits.
 
+## [0.4.0](https://github.com/arthurjosebona/CifraSync/compare/v0.3.1...v0.4.0) (2026-11-22)
+
+### Funcionalidades
+
+* **api:** cadastro sem e-mail, troca de senha e administração do app ([2f85ef3](https://github.com/arthurjosebona/CifraSync/commit/2f85ef318b8e4606caa651c56563e54fd5580c0b))
+
 ## [0.3.1](https://github.com/arthurjosebona/CifraSync/compare/v0.3.0...v0.3.1) (2026-11-20)
 
 ### Correções

@@ -1,6 +1,6 @@
 [package]
 name = "cifrasync"
-version = "0.3.1"
+version = "0.4.0"
 description = "CifraSync — cifras, repertórios e teleprompter de palco"
 authors = ["arthurjosebona"]
 license = "MIT"
