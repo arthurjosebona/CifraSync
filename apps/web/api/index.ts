@@ -1,5 +1,6 @@
 /**
- * Entrada da API na Vercel (Vercel Functions, runtime Node). Toda rota /api/* cai aqui.
+ * Entrada da API na Vercel (Vercel Functions, runtime Node). Toda rota /api/* cai aqui pelo rewrite do
+ * vercel.json (um arquivo `[[...route]]` só casa um nível de caminho fora do Next.js).
  */
 import { getApp } from '../server/instance.js';
 
