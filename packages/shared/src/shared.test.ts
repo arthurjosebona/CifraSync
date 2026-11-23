@@ -1,6 +1,13 @@
 import { describe, expect, it } from 'vitest';
 
-import { AppSettings, parseAppSettings, Song, StageSettings, Username } from './index';
+import {
+  AppSettings,
+  MAX_FONT_SIZE,
+  parseAppSettings,
+  Song,
+  StageSettings,
+  Username,
+} from './index';
 
 describe('configurações', () => {
   it('preenche todos os padrões a partir de um objeto vazio', () => {
@@ -12,10 +19,18 @@ describe('configurações', () => {
   });
 
   it('mantém o que veio e completa o resto', () => {
-    const s = parseAppSettings({ stage: { fontSize: 40, colors: { bg: '#ffffff' } } });
-    expect(s.stage.fontSize).toBe(40);
+    const s = parseAppSettings({ stage: { fontSize: 30, colors: { bg: '#ffffff' } } });
+    expect(s.stage.fontSize).toBe(30);
     expect(s.stage.colors.bg).toBe('#ffffff');
     expect(s.stage.colors.lyric).toBe('#ffffff');
+  });
+
+  it('letra maior que o Ao vivo 3 (salva antes do limite) vira o máximo', () => {
+    expect(parseAppSettings({ stage: { fontSize: 48, center: true } }).stage).toMatchObject({
+      fontSize: MAX_FONT_SIZE,
+      center: true,
+    });
+    expect(MAX_FONT_SIZE).toBe(34);
   });
 
   it('dados inválidos voltam ao padrão', () => {
