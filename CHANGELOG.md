@@ -2,6 +2,14 @@
 
 Todas as mudanças relevantes do CifraSync. Gerado a partir dos Conventional Commits.
 
+## [0.6.0](https://github.com/arthurjosebona/CifraSync/compare/v0.5.0...v0.6.0) (2026-11-22)
+
+### Funcionalidades
+
+* **grupos:** seção Grupos em Repertórios com os repertórios compartilhados ([0857453](https://github.com/arthurjosebona/CifraSync/commit/0857453fa1f5447d25b470da948abe5c1cc893c5))
+* **palco:** letra até o Ao vivo 3 e refrão ciano no preset Palco escuro ([13a8605](https://github.com/arthurjosebona/CifraSync/commit/13a86056631d226b8508934c4ad2032f25e69ce9))
+* **palco:** tela cheia sempre, margens na cifra e sem avisos de fim ([1cde53a](https://github.com/arthurjosebona/CifraSync/commit/1cde53aceb68547b5f93b721a04a840b2ab19c3b))
+
 ## [0.5.0](https://github.com/arthurjosebona/CifraSync/compare/v0.4.0...v0.5.0) (2026-11-22)
 
 ### Funcionalidades
