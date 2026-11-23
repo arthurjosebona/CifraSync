@@ -1,5 +1,6 @@
 import { parseSong } from '@cifrasync/core';
 import {
+  MAX_FONT_SIZE,
   NAMED_FONT_SIZES,
   STAGE_PRESETS,
   StageSettings,
@@ -249,7 +250,7 @@ export default function Configuracoes() {
             label="Tamanho livre"
             value={stage.fontSize}
             min={12}
-            max={96}
+            max={MAX_FONT_SIZE}
             step={1}
             format={(v) => `${v}px`}
             onChange={(fontSize) => set({ fontSize })}
