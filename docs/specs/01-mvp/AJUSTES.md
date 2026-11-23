@@ -27,3 +27,14 @@ Correções e pequenos ajustes pedidos pelo autor depois de testar o app. Até a
 - **Listas:** tocar numa música ou num repertório abre direto no palco. O botão **⋮** ao lado abre os detalhes (editar, setlist, exportar etc.).
 - **Acordes:** os diagramas ficam só na aba Acordes, como dicionário (a estrela marca a posição favorita). Saíram da tela da música, do palco e dos Ajustes ("Coluna de acordes", instrumento e mão).
 - **Editor:** botão **Introdução**, que insere o título `[Introdução]` acima da linha do cursor.
+
+## 0.6.0 — palco, letra e grupos
+
+- **Tamanho da letra:** vai até o "Ao vivo 3" (34 px), nos botões e no tamanho livre. Os botões "Palco 1" e "Palco 2" saíram. Quem tinha salvo um tamanho maior passa a usar 34 px.
+- **Preset "Palco escuro":** o refrão fica em ciano (`#00ffff`, o mesmo do "Alto contraste"). O padrão do app também.
+- **Repertórios:** a lista principal mostra só os repertórios da própria pessoa. A nova seção **Grupos** mostra, por grupo, os repertórios compartilhados, incluindo os seus (marcados "seu").
+- **Palco:**
+  - saíram os avisos "Última página" e "Fim do repertório";
+  - abre sempre em tela cheia e sai dela ao fechar. No Android, um plugin nativo (`ImmersivePlugin`) esconde também a barra de navegação. No navegador, se a tela cheia for recusada ao abrir, ela é pedida de novo no primeiro toque;
+  - margem em cima e embaixo da cifra, para nada encostar na borda nem cortar.
+- **Grupos (correção):** as consultas de grupos tinham as mesmas leituras encadeadas que travavam os Ajustes (a tela podia não atualizar). Agora leem tudo de uma vez.

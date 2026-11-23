@@ -12,7 +12,7 @@ export const StageColors = z.object({
   bg: Color.default('#000000'),
   lyric: Color.default('#ffffff'),
   chord: Color.default('#ffcc00'),
-  chorus1: Color.default('#4fc3f7'),
+  chorus1: Color.default('#00ffff'),
   chorus2: Color.default('#81c784'),
   chorus3: Color.default('#f48fb1'),
   voice2: Color.default('#b39ddb'),
@@ -27,14 +27,21 @@ export const NAMED_FONT_SIZES = {
   'Ao vivo 1': 26,
   'Ao vivo 2': 30,
   'Ao vivo 3': 34,
-  'Palco 1': 40,
-  'Palco 2': 48,
 } as const;
+
+/** Maior tamanho de letra do palco (o do "Ao vivo 3"): acima disso a cifra corta e quebra. */
+export const MAX_FONT_SIZE = NAMED_FONT_SIZES['Ao vivo 3'];
 
 export const StageSettings = z.object({
   fontFamily: z.string().default('Inter'),
   chordFont: z.string().default('JetBrains Mono'),
-  fontSize: z.number().min(12).max(96).default(26),
+  // valores maiores salvos antes do limite viram o máximo (em vez de invalidar tudo)
+  fontSize: z
+    .number()
+    .min(12)
+    .max(96)
+    .transform((v) => Math.min(v, MAX_FONT_SIZE))
+    .default(26),
   lineHeight: z.number().min(1).max(2.5).default(1.35),
   chordScale: z.number().min(0.6).max(1.4).default(0.9),
   colors: StageColors.default(StageColors.parse({})),
@@ -83,7 +90,7 @@ export type UserSettings = z.infer<typeof UserSettings>;
 
 /** Presets prontos de cores do palco. */
 export const STAGE_PRESETS: Record<string, Partial<StageColors>> = {
-  'Palco escuro': { bg: '#000000', lyric: '#ffffff', chord: '#ffcc00' },
+  'Palco escuro': { bg: '#000000', lyric: '#ffffff', chord: '#ffcc00', chorus1: '#00ffff' },
   'Ensaio claro': {
     bg: '#ffffff',
     lyric: '#1c1b18',
