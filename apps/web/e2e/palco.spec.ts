@@ -96,7 +96,9 @@ test('repertório avança para a próxima música no fim da última página', as
   await expect(page.locator('header').getByText('Abertura')).toBeVisible();
   await page.keyboard.press('ArrowRight');
   await expect(page.locator('header').getByText('Encerramento')).toBeVisible();
-  await expect(page.getByText('Fim do repertório')).toBeVisible();
+  await expect(page.locator('header').getByText('2/2')).toBeVisible();
+  // sem aviso flutuante de fim: o palco fica limpo
+  await expect(page.getByText('Fim do repertório')).toHaveCount(0);
 });
 
 test('no modo híbrido, rolar à mão não desliga a rolagem automática', async ({ page }) => {

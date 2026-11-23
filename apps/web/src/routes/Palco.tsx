@@ -133,17 +133,32 @@ export default function Palco() {
     : DEFAULT_SPEED;
 
   const [page, setPage] = useState({ current: 0, total: 1 });
-  const [atScrollEnd, setAtScrollEnd] = useState(false);
   const onPageChange = useCallback(
     (cur: number, total: number) => setPage({ current: cur, total }),
     [],
   );
 
-  // ------------------------------------------------------------ tela ligada
+  // ------------------------------------------------------------ tela ligada e tela cheia
   useEffect(() => {
     void platform().keepAwake(true);
+    // o palco é sempre em tela cheia; sai dela ao fechar (inclusive pelo botão voltar)
+    void platform().setFullscreen(true);
     return () => {
       void platform().keepAwake(false);
+      void platform().setFullscreen(false);
+    };
+  }, []);
+  // no navegador a tela cheia só é aceita depois de um toque: se foi recusada ao abrir,
+  // tenta de novo no primeiro toque ou tecla
+  useEffect(() => {
+    const retry = () => {
+      if (!platform().isFullscreen()) void platform().setFullscreen(true);
+    };
+    window.addEventListener('pointerdown', retry);
+    window.addEventListener('keydown', retry);
+    return () => {
+      window.removeEventListener('pointerdown', retry);
+      window.removeEventListener('keydown', retry);
     };
   }, []);
 
@@ -331,8 +346,6 @@ export default function Palco() {
     '--stage-hold-ms': `${HOLD_MS - HOLD_HINT_MS}ms`,
   } as React.CSSProperties;
 
-  const lastEntry = current === entries.length - 1;
-  const atLastPage = mode === 'paged' ? page.current >= page.total - 1 : atScrollEnd;
   const changed = st !== entry.baseSemitones;
   const bigBtn =
     'flex size-20 shrink-0 items-center justify-center rounded-2xl bg-white/10 text-white active:bg-white/25 disabled:opacity-30';
@@ -372,8 +385,9 @@ export default function Palco() {
         </div>
       )}
 
+      {/* margem em cima e embaixo: a cifra nunca encosta na borda (nem corta) e lê melhor */}
       <div
-        className="min-h-0 flex-1 px-4 pb-[max(0.5rem,env(safe-area-inset-bottom))]"
+        className="min-h-0 flex-1 px-4 pt-5 pb-[max(1.5rem,env(safe-area-inset-bottom))]"
         onPointerDownCapture={onHoldStart}
         onPointerMoveCapture={onHoldMove}
         onPointerUpCapture={cancelHold}
@@ -392,18 +406,12 @@ export default function Palco() {
           onTap={onTap}
           onBoundary={onBoundary}
           onPageChange={onPageChange}
-          onScrollEnd={setAtScrollEnd}
           onScrollableHeight={setScrollable}
         />
       </div>
 
-      {/* avisos */}
+      {/* aviso de versão nova da música (os de "última página" e "fim do repertório" saíram) */}
       <div className="pointer-events-none absolute inset-x-0 top-10 flex flex-col items-center gap-2">
-        {atLastPage && (isSetlist || page.total > 1 || mode !== 'paged') && (
-          <span className="rounded-full bg-white/15 px-3 py-1 text-xs">
-            {lastEntry && isSetlist ? 'Fim do repertório' : 'Última página'}
-          </span>
-        )}
         {hasUpdate && (
           <span className="rounded-full bg-white/15 px-3 py-1 text-xs">
             Esta música foi atualizada — a nova versão entra ao trocar de música

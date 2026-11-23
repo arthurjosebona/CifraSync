@@ -1,10 +1,11 @@
 /**
- * Plataforma Android (Capacitor): tela ligada pelo plugin keep-awake, modo imersivo pela
- * barra de status, orientação, token nas preferências, arquivos via compartilhamento e aviso
- * de versão nova consultando a última release no GitHub.
+ * Plataforma Android (Capacitor): tela ligada pelo plugin keep-awake, modo imersivo (plugin
+ * próprio `Immersive`, que esconde a barra de status e a de navegação), orientação, token nas
+ * preferências, arquivos via compartilhamento e aviso de versão nova pela última release no GitHub.
  */
 import { KeepAwake } from '@capacitor-community/keep-awake';
 import { App } from '@capacitor/app';
+import { registerPlugin } from '@capacitor/core';
 import { Directory, Encoding, Filesystem } from '@capacitor/filesystem';
 import { Preferences } from '@capacitor/preferences';
 import { ScreenOrientation } from '@capacitor/screen-orientation';
@@ -18,6 +19,9 @@ const RELEASES_API = 'https://api.github.com/repos/arthurjosebona/CifraSync/rele
 const TOKEN_KEY = 'cifrasync.token';
 
 let immersive = false;
+
+/** Plugin nativo do app (apps/android/.../ImmersivePlugin.java). */
+const Immersive = registerPlugin<{ enter(): Promise<void>; exit(): Promise<void> }>('Immersive');
 
 /** Compara versões semânticas simples (1.2.10 > 1.2.9). */
 export function isNewer(latest: string, current: string): boolean {
@@ -49,11 +53,18 @@ export const androidPlatform: Platform = {
   },
   async setFullscreen(on) {
     try {
-      if (on) await StatusBar.hide();
-      else await StatusBar.show();
+      if (on) await Immersive.enter();
+      else await Immersive.exit();
       immersive = on;
     } catch {
-      immersive = false;
+      // app antigo sem o plugin nativo: ao menos esconde a barra de status
+      try {
+        if (on) await StatusBar.hide();
+        else await StatusBar.show();
+        immersive = on;
+      } catch {
+        immersive = false;
+      }
     }
   },
   isFullscreen: () => immersive,
