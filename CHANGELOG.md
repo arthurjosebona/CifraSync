@@ -2,6 +2,20 @@
 
 Todas as mudanças relevantes do CifraSync. Gerado a partir dos Conventional Commits.
 
+## [0.5.0](https://github.com/arthurjosebona/CifraSync/compare/v0.4.0...v0.5.0) (2026-11-22)
+
+### Funcionalidades
+
+* **editor:** botão Introdução e tom preenchido pela linha "Tom:" colada ([6792979](https://github.com/arthurjosebona/CifraSync/commit/6792979602c5d55597f87d79ff250d39da841032))
+* **palco:** menu do tom ao segurar 3 segundos e listas que abrem direto no palco ([02ae6bc](https://github.com/arthurjosebona/CifraSync/commit/02ae6bc44ae5503084007b315dc63b41174294ea))
+
+### Correções
+
+* **core:** tom detectado, grafia e formatação da cifra colada ([dc2303d](https://github.com/arthurjosebona/CifraSync/commit/dc2303d8c2ba4ee44a211b4e4fa7273e7e671798))
+* **palco:** erro ao voltar ou avançar entre músicas do repertório ([7abfc78](https://github.com/arthurjosebona/CifraSync/commit/7abfc789eee4230c8bc2f254416a51ec62f4889d))
+* **palco:** espera as configurações carregarem antes de abrir o palco ([cc2c7dd](https://github.com/arthurjosebona/CifraSync/commit/cc2c7dd2a8515f9b4501d9b9050f12de76494601))
+* **sync:** configurações salvas não apareciam na tela (botões de Ajustes e Acordes) ([7778183](https://github.com/arthurjosebona/CifraSync/commit/777818364d3f4a7180d3a90eae95bacf63050a52))
+
 ## [0.4.0](https://github.com/arthurjosebona/CifraSync/compare/v0.3.1...v0.4.0) (2026-11-22)
 
 ### Funcionalidades
